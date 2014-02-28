@@ -8,7 +8,7 @@ addpath ../helper/
 addpath ../GPLibkky/
 
 % Constants
-NUM_DIMS = 6;
+NUM_DIMS = 10;
 LOWEST_LOGLIKL_VAL = -30;
 LOGLIKL_RANGE = 35;
 
