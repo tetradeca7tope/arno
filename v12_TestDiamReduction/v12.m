@@ -2,16 +2,24 @@
 
 GRID_SIZE = 300;
 
+% debuggin
+DEBUG = false;
+% DEBUG = true;
+if DEBUG
+  stop_grid_iter = 100;
+  stop_val_iter = 80;
+end
+
 % params for the experiment
-L = 5;
+L = 6;
 y0 = 2;
 y1 = 4;
 x0 = 0;
 x1 = 1;
 % Determine the transformation
 % phi = @(x) exp(x);
-phi = @(x) x.^2;
-% phi = @(x) (x);
+% phi = @(x) x.^2;
+phi = @(x) (x);
 
 grid = linspace(0, 1, GRID_SIZE)';
 
@@ -38,28 +46,34 @@ for grid_iter = 1:GRID_SIZE
     diffs = phi(ub) - phi(lb);
     diameters(val_iter) = max(diffs);
 
-    if grid_iter == 80 && val_iter == 80
-      plot(grid, lb, 'k--'); hold on,
-      plot(grid, ub, 'k-.');
-      plot(grid, diffs / max(diffs) * 3, 'c');
-      diameters(val_iter),
-      pause;
+    if DEBUG
+      if grid_iter == stop_grid_iter && val_iter == stop_val_iter
+        plot(grid, lb, 'k--'); hold on,
+        plot(grid, ub, 'k-.');
+        plot(grid, diffs / max(diffs) * 3, 'c');
+        diameters(val_iter),
+        pause;
+      end
     end
 
   end
 
-  if grid_iter == 80
-    f1 = gcf();
-    figure;
-    plot(diameters); 
-    pause
-    figure(f1);
+  if DEBUG
+    if grid_iter == stop_grid_iter
+      f1 = gcf();
+      figure;
+      plot(diameters); 
+      pause
+      figure(f1);
+    end
   end
 
   [max_val, max_idx] = max(diameters);
   adverse_points(grid_iter) = possible_vals(max_idx);
-  adverse_vals = max_val;
+  adverse_vals(grid_iter) = max_val;
 end
 
 plot(grid, adverse_points, 'm');
 plot(grid, adverse_vals/ max(adverse_vals) * 3, 'g');
+title_str = sprintf('phi: %s', func2str(phi));
+title(title_str);
