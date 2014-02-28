@@ -4,12 +4,17 @@
 NUM_AL_CANDIDATES = 200;
 NOISE_LEVEL = 0.005;
 
-if NUM_INIT_PTS_PER_DIM == 1
-  init_pts_1dim = 0.5;
+if INIT_ON_GRID
+  if NUM_INIT_PTS_PER_DIM == 1
+    init_pts_1dim = 0.5;
+  else
+    init_pts_1dim = linspace(0, 1, NUM_INIT_PTS_PER_DIM)';
+  end
+  initial_pts = gengrid(NUM_DIMS, init_pts_1dim);
 else
-  init_pts_1dim = linspace(0, 1, NUM_INIT_PTS_PER_DIM)';
+  initial_pts = rand(NUM_INIT_PTS_PER_DIM-2, NUM_DIMS);
+  initial_pts = [initial_pts; zeros(1, NUM_DIMS); ones(1, NUM_DIMS)];
 end
-initial_pts = gengrid(NUM_DIMS, init_pts_1dim);
 num_initial_pts = size(initial_pts, 1);
 
 % Initialize Active Learning

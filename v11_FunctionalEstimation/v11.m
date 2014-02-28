@@ -8,7 +8,7 @@ addpath ../helper/
 addpath ../GPLibkky/
 
 % Constants
-NUM_DIMS = 3;
+NUM_DIMS = 6;
 LOWEST_LOGLIKL_VAL = -30;
 LOGLIKL_RANGE = 35;
 
@@ -26,7 +26,8 @@ else
   NUM_MCMC_BURNIN_FOR_EST = 2;
   NUM_EXPERIMENTS = 2;
 end
-NUM_INIT_PTS_PER_DIM = 2;
+NUM_INIT_PTS_PER_DIM = 100;
+INIT_ON_GRID = false;
 MCMC_EST_PROPOSAL_STD = 0.5;
 MCMC_EST_INIT_PT = zeros(NUM_DIMS, 1);
 

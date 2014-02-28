@@ -32,7 +32,7 @@ SAVE_LOCAL_RESULTS = false;
 % Set the following parameters for the Experiment
 ALP = 1.1; BEP = 1; CCP = 1; % The prior for the beta binomial.
 NUM_BINOMIAL_SAMPLES = 500;
-NUM_INITIAL_PTS = 4; % # points at which to run the simulation initially
+NUM_INITIAL_PTS = 2; % # points at which to run the simulation initially
 NUM_KFOLDCV_PARTITIONS = 20;
 NOISE_LEVEL = 0.05; % Noise associated with measurements
 BORDER_TOL = 1e-2;
@@ -46,12 +46,12 @@ if USE_OPTIMAL_BANDWIDTH
 end
 
 if QUICK_DEBUG_MODE
-%   NUM_AL_ITERS = 3;
+  NUM_AL_ITERS = 3;
   NUM_AL_CANDIDATES = 5;
   NUM_SAMPLE_FUNCTIONS = 5;
   RESOLUTION = 20;
 else
-%   NUM_AL_ITERS = 100; % Number of iterations of active learning
+  NUM_AL_ITERS = 100; % Number of iterations of active learning
   NUM_AL_CANDIDATES = 110; % # candidates to choose from for Active Learning
   NUM_SAMPLE_FUNCTIONS = 107;
   RESOLUTION = 200;
@@ -137,11 +137,11 @@ end
 % figure(fig_post); plot(th, true_post, 'g-', 'LineWidth', 2); hold on,
 
 % Use Expected Error Reduction
-fprintf('\nExpected Error Reduction\n======================================\n');
+% fprintf('\nExpected Error Reduction\n======================================\n');
 % ExpectedErrorReduction;
 % UncertaintyReduction;
-QBC;
-kl_progress = uc_kl_progress;
+% QBC;
+% kl_progress = uc_kl_progress;
 % kl_progress = 0.7*uc_kl_progress + 1e-6 + 0.1*rand(NUM_AL_ITERS, 1) .* uc_kl_progress;
 
 % Use uncertainty reduction
@@ -149,8 +149,8 @@ fprintf('\nUncertainty Reduction\n======================================\n');
 UncertaintyReduction;
 
 % Use MCMC to Obtain an estimation of the posterior
-fprintf('\nMCMC\n======================================\n');
-MCMCForPostEstimation;
+% fprintf('\nMCMC\n======================================\n');
+% MCMCForPostEstimation;
 
 % MCMC KDE
 % MCMCKDE;
@@ -159,8 +159,11 @@ MCMCForPostEstimation;
 % ApproxBayesianComputing;
 
 % finally obtain a baseline performance using an exhaustive search
-fprintf('\nBruteForce\n======================================\n');
-bruteForceSearchPostEstimation;
+% fprintf('\nBruteForce\n======================================\n');
+% bruteForceSearchPostEstimation;
+
+% Perform the Lipschitz Heuristic
+LipschitzHeuristic;
 
 % Plot the results out
 PLOT_OK_V8_RESULTS = false;
