@@ -3,7 +3,8 @@ function [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
   numALIters, params);
 % Performs Active Learning using the Maximum Band Point procedure. At each
 % iteration it invokes maxBandPoint.m which picks the next point.
-% oracle is a function handle to the function to be learned
+% oracle is a function handle to the function to be learned. It takes a nxd
+% matrix of n pts and returns an nx1 vector.
 % In addition it does the follwing.
 % 1. Increases the Lipschitz Constant if it detects any violations.
 % 2. If init_pts is empty it initializes at the centre of bounds
@@ -11,7 +12,7 @@ function [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
   % If initPts not given, initalize at the centre of the rectangle.
   if isempty(initPts)
     initPts = [(bounds(:,1) + bounds(:,2))/2]';
-    initVals = oracle(initPts);
+    initVals = oracle(initPts); 
   end
   % If phi is not given, use exp(.)
   if isempty(phi)
@@ -34,7 +35,7 @@ function [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
   for al_iter = 1:numALIters
     next_pt = maxBandPoint(mbp_pts, mbp_vals, mbp_lipschitz_const, phi, ...
                            gradPhi, params);
-    next_val = oracle(next_pt);
+    next_val = oracle(next_pt');
     fprintf('AL iter %d: val: %0.4f, pt: %s\n', ...
             al_iter, next_val, mat2str(next_pt));
 
@@ -42,7 +43,7 @@ function [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
     % Had you set too small a Lipschitz constant, incrase it.
     if params.check_for_lipschitz_violations
       diffs = bsxfun(@minus, mbp_pts, next_pt');
-      distances = sqrt(sum(diffs.^2));
+      distances = sqrt(sum(diffs.^2, 2));
       % Violations in Upper bound
       ubnds_on_next_val = mbp_vals + mbp_lipschitz_const * distances;
       [ubnd, u_idx] = min(ubnds_on_next_val);

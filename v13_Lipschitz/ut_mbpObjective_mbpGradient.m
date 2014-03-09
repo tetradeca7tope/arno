@@ -5,7 +5,7 @@ close all;
 % Define phi
 phi = @(x) exp(x); gradPhi = @(x) exp(x);
 % phi = @(x) x^2; gradPhi = @(x) 2*x;
-LIPSCHITZ_CONST = 9;
+LIPSCHITZ_CONST = 6;
 % For the experiments
 num_pts = 10;
 resolution = 100;
@@ -53,13 +53,13 @@ plot(chosen_pt, -obj(chosen_pt), 'r*', 'MarkerSize', 10);
 fprintf('Chosen-Pt: %0.4f\n', chosen_pt);
 fprintf('Paused ...\n\n');
 pause;
-% Finally do alMaxBandPoint
-figure;
-plot(th, f(th), 'b'); hold on,
-[mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
-  f, [], [], phi, gradPhi, LIPSCHITZ_CONST, [0 1], ...
-  30, params);
-plot(mbp_pts, mbp_vals, 'rx');
+% % Finally do alMaxBandPoint
+% figure;
+% plot(th, f(th), 'b'); hold on,
+% [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
+%   f, [], [], phi, gradPhi, LIPSCHITZ_CONST, [0 1], ...
+%   30, params);
+% plot(mbp_pts, mbp_vals, 'rx');
 
 % Test 2 : Two Dimensions
 % -----------------------
@@ -120,7 +120,7 @@ plot3(chosen_pt(1), chosen_pt(2), -obj(chosen_pt), 'r*', 'MarkerSize', 10);
 figure;
 % plot(th, f(th), 'b'); hold on,
 [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
-  f, [], [], phi, gradPhi, LIPSCHITZ_CONST, [0 1], ...
+  f, [], [], phi, gradPhi, LIPSCHITZ_CONST, [0 1; 0 1], ...
   100, params);
 plot3(mbp_pts(:,1), mbp_pts(:,2), mbp_vals, 'rx');
 
