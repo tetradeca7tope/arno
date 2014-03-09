@@ -7,7 +7,7 @@ function [chosen_pt] = maxBandPoint(X, y, L, phi, gradPhi, params)
 % params.bounds is a dx2 matrix giving upper and lower bounds for each dimension
 % params.num_grad_desc_init_pts: # pts to init gradient descent.
 % params.num_grad_desc_iters: # iterations of gradient descent.
-% params.grad_desc_top: tolerance for gradient descent.
+% params.grad_desc_tol: tolerance for gradient descent.
 
   NUM_GRAD_DESC_TRIALS = 40; % # different initializations for gradient desc.
   GRAD_DESC_TOL = 1e-10; % tolerance for gradient descent.
@@ -40,7 +40,7 @@ function [chosen_pt] = maxBandPoint(X, y, L, phi, gradPhi, params)
   % Set things up for gradient descent
   grad_desc_init_pts = bsxfun( ...
     @plus, bsxfun(@times, rand(params.num_grad_desc_init_pts, num_dims), ...
-                  (params.bounds(:,1) - params.bounds(:,2))'), ...
+                  (params.bounds(:,2) - params.bounds(:,1))'), ...
     params.bounds(:, 1)' );
   % Define the objective and the gradient of the objective
   obj = @(t) -mbpObjective(t, X, y, phi, L, [0 1]);

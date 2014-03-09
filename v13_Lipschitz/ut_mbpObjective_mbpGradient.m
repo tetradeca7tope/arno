@@ -5,7 +5,7 @@ close all;
 % Define phi
 phi = @(x) exp(x); gradPhi = @(x) exp(x);
 % phi = @(x) x^2; gradPhi = @(x) 2*x;
-LIPSCHITZ_CONST = 6;
+LIPSCHITZ_CONST = 9;
 % For the experiments
 num_pts = 10;
 resolution = 100;
@@ -14,8 +14,8 @@ resolution = 100;
 % ---------------------
 fprintf('Test in 1 Dimension:\n');
 f = @(t) t.^2 /4 + sin(7*t);
-% X = rand(num_pts, 1);
-X = [0.1 0.6 0.95]';
+X = rand(num_pts, 1);
+% X = [0.1 0.6 0.95]';
 y = f(X);
 obj = @(t) -mbpObjective(t, X, y, phi, LIPSCHITZ_CONST, [0 1]);
 gradObj = @(t) -mbpGradient(t, X, y, phi, gradPhi, LIPSCHITZ_CONST);
@@ -46,13 +46,20 @@ end
 plot(th, -obj_th, 'b'); hold on,
 plot(init_pt, -obj(init_pt), 'ro');
 plot(xmin, -fmin, 'rx');
-fprintf('Paused ...\n');
-pause;
 fprintf('Now Running Max Band Point\n');
 mbp_params.bounds = [0 1];
 chosen_pt = maxBandPoint(X, y, LIPSCHITZ_CONST, phi, gradPhi, mbp_params);
 plot(chosen_pt, -obj(chosen_pt), 'r*', 'MarkerSize', 10);
-fprintf('Chosen-Pt: %0.4f\n\n', chosen_pt);
+fprintf('Chosen-Pt: %0.4f\n', chosen_pt);
+fprintf('Paused ...\n\n');
+pause;
+% Finally do alMaxBandPoint
+figure;
+plot(th, f(th), 'b'); hold on,
+[mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
+  f, [], [], phi, gradPhi, LIPSCHITZ_CONST, [0 1], ...
+  30, params);
+plot(mbp_pts, mbp_vals, 'rx');
 
 % Test 2 : Two Dimensions
 % -----------------------
@@ -67,9 +74,23 @@ figure;
 mesh(T1, T2, fT);
 init_pt = rand(2, 1);
 % init_pt = [0.5 0.5]';
+% First Plot the upper and lower bounds
+  figure;
+  ubound = zeros(size(T1));
+  lbound = zeros(size(T1));
+  for i = 1:resolution
+    for j = 1:resolution
+      curr_pt = [T1(i,j); T2(i,j)];
+      distances = sqrt( dist2(X, curr_pt') );
+      ubound(i,j) = min( y + LIPSCHITZ_CONST*distances );
+      lbound(i,j) = max( y - LIPSCHITZ_CONST*distances );
+    end
+  end
+  mesh(T1, T2, ubound); hold on
+  mesh(T1, T2, lbound);
+% Set things up for Gradient Descent
 gd_params.num_iters = 200;
 gd_params.init_step_size = 0.1;
-% Set things up for Gradient Descent
 obj = @(t) -mbpObjective(t, X, y, phi, LIPSCHITZ_CONST, [0 1; 0 1]);
 gradObj = @(t) -mbpGradient(t, X, y, phi, gradPhi, LIPSCHITZ_CONST);
 [fmin, xmin] = gradientDescent(obj, gradObj, init_pt, gd_params);
@@ -89,24 +110,17 @@ figure;
 mesh(T1, T2, -obj_th); hold on;
 plot3(init_pt(1), init_pt(2), -obj(init_pt), 'mo', 'MarkerSize', 10);
 plot3(xmin(1), xmin(2), -fmin, 'mx', 'MarkerSize', 10);
-% Plot the upper and lower bounds
-figure;
-ubound = zeros(size(T1));
-lbound = zeros(size(T1));
-for i = 1:resolution
-  for j = 1:resolution
-    curr_pt = [T1(i,j); T2(i,j)];
-    distances = sqrt( dist2(X, curr_pt') );
-    ubound(i,j) = min( y + LIPSCHITZ_CONST*distances );
-    lbound(i,j) = max( y - LIPSCHITZ_CONST*distances );
-  end
-end
-mesh(T1, T2, ubound); hold on
-mesh(T1, T2, lbound);
-fprintf('Paused ...\n');
-pause;
+% Run MaxBand Point
 fprintf('Now Running Max Band Point\n');
 mbp_params.bounds = [0 1; 0 1];
 chosen_pt = maxBandPoint(X, y, LIPSCHITZ_CONST, phi, gradPhi, mbp_params);
-plot(chosen_pt(1), chosen_pt(2), -obj(chosen_pt), 'r*', 'MarkerSize', 10);
+fprintf('Chosen-Pt: %s\n', mat2str(chosen_pt));
+plot3(chosen_pt(1), chosen_pt(2), -obj(chosen_pt), 'r*', 'MarkerSize', 10);
+% Finally do alMaxBandPoint
+figure;
+% plot(th, f(th), 'b'); hold on,
+[mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
+  f, [], [], phi, gradPhi, LIPSCHITZ_CONST, [0 1], ...
+  100, params);
+plot3(mbp_pts(:,1), mbp_pts(:,2), mbp_vals, 'rx');
 
