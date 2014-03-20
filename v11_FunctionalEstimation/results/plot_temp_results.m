@@ -20,11 +20,15 @@ for i = 1:numel(functionals)
 %   end_idx = min(ceil(q*.8), q-1);
   f_uc_err = sort(f_uc_err); f_uc_err = f_uc_err(start_idx:end_idx, :);
   f_mcmc_err = sort(f_mcmc_err); f_mcmc_err = f_mcmc_err(start_idx:end_idx, :);
-%   mean_uc_err = f_uc_err;
-%   mean_mcmc_err = f_mcmc_err;
-  mean_uc_err = mean(f_uc_err);
-  mean_mcmc_err = mean(f_mcmc_err);
-  mean_mbp_err = mean(f_mbp_err);
+  if q == 1
+    mean_uc_err = f_uc_err;
+    mean_mcmc_err = f_mcmc_err;
+    mean_mbp_err = f_mbp_err;
+  else
+    mean_uc_err = mean(f_uc_err);
+    mean_mcmc_err = mean(f_mcmc_err);
+    mean_mbp_err = mean(f_mbp_err);
+  end
 
   plot(log(mean_mcmc_err), 'b-o'); hold on,
   plot(log(mean_uc_err), 'r-x');

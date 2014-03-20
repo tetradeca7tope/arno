@@ -2,7 +2,6 @@
 
 % Parameter for Active Learning
 NUM_AL_CANDIDATES = 200;
-NOISE_LEVEL = 0.005;
 
 if INIT_ON_GRID
   if NUM_INIT_PTS_PER_DIM == 1

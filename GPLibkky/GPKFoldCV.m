@@ -15,6 +15,11 @@ function [mu, K, sigmaSmOpt, sigmaPrOpt] = GPKFoldCV(X, y, Xtest, ...
     cand_vals = candidates;
   end
 
+  % if the Cost function is not specified, the set it to be sum of squares
+  if ~isfield(hyperParams, 'costFunc')
+    hyperParams.costFunc = @(y1, y2) (y1 - y2).^2;
+  end
+
   if isempty(num_partitions)
     num_partitions = min(size(X,1), 10);
   end
@@ -66,7 +71,8 @@ function [kfold_likl] = KFoldExperiment(X, y, num_partitions, hyperParams)
     yte = y(test_indices);
     hyperParams.noise = orig_noise(train_indices);
     [mu, ~, K] = GPRegression(Xtr, ytr, Xte, hyperParams);
-    curr_avg_log_likl = GPAvgLogLikelihood(mu, K, yte);
+%     curr_avg_log_likl = GPAvgLogLikelihood(mu, K, yte);
+    curr_avg_log_likl = sum(hyperParams.costFunc(mu, yte));
     if isnan(curr_avg_log_likl)
       curr_avg_log_likl = -inf;
     end

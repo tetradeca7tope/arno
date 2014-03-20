@@ -8,7 +8,7 @@ addpath ../LipLibkky/
 % Define phi
 phi = @(x) exp(x); gradPhi = @(x) exp(x);
 % phi = @(x) x^2; gradPhi = @(x) 2*x;
-LIPSCHITZ_CONST = 6;
+LIPSCHITZ_CONST = 100;
 % For the experiments
 NUM_AL_PTS = 103;
 num_pts = 10;
@@ -76,19 +76,25 @@ plot3(xmin(1), xmin(2), -fmin, 'mx', 'MarkerSize', 10);
 fprintf('Test for Max Band Point\n');
 mbp_params.bounds = [0 1; 0 1];
 chosen_pt = maxBandPoint(X, y, LIPSCHITZ_CONST, phi, gradPhi, mbp_params);
-fprintf('Chosen-Pt: %s\n', mat2str(chosen_pt));
+fprintf('Chosen-Pt: %s\n\n', mat2str(chosen_pt));
 plot3(chosen_pt(1), chosen_pt(2), -obj(chosen_pt), 'r*', 'MarkerSize', 10);
 
 % TEST for alMaxBandPoint
 % =======================
-% plot(th, f(th), 'b'); hold on,
+fprintf('Test for alMaxBandPoint\n');
+% Determine the initial values
 almbp_params = gd_params;
+% al_init_pts = []; %  Algorithm picks the init pt
+al_init_pts = [0.9 0.9]; % A bad initialization for the function
+al_init_vals = f(al_init_pts);
+
 [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
-  f, [], [], phi, gradPhi, LIPSCHITZ_CONST, [0 1; 0 1], ...
+  f, al_init_pts, al_init_vals, phi, gradPhi, LIPSCHITZ_CONST, [0 1; 0 1], ...
   NUM_AL_PTS, almbp_params);
 figure;
 contour(T1, T2, fT); hold on,
 plot(mbp_pts(:,1), mbp_pts(:,2), 'rx');
-title_str = sprintf('L = %f, (%d pts)', LIPSCHITZ_CONST, NUM_AL_PTS);
+title_str = sprintf('L = %f, (%d pts), init: %s', ...
+  mbp_lipschitz_const, NUM_AL_PTS, mat2str(al_init_pts));
 title(title_str);
 

@@ -48,7 +48,7 @@ function [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
       ubnds_on_next_val = mbp_vals + mbp_lipschitz_const * distances;
       [ubnd, u_idx] = min(ubnds_on_next_val);
       if ubnd < next_val
-        new_L = 2*(next_val - mbp_vals(u_idx))/ distances(u_idx);
+        new_L = 2 * (next_val - mbp_vals(u_idx))/ distances(u_idx);
         fprintf('  Lip-Violn: UB: %0.4f, next_val: %0.4f. ', ubnd, next_val);
         fprintf('Changing L to %0.4f from %0.4f\n', new_L, mbp_lipschitz_const);
         mbp_lipschitz_const = new_L;
@@ -57,8 +57,8 @@ function [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
       lbnds_on_next_val = mbp_vals - mbp_lipschitz_const * distances;
       [lbnd, l_idx] = max(lbnds_on_next_val);
       if lbnd > next_val
-        new_L = (mbp_vals(u_idx) - next_val)/ distances(u_idx);
-        fprintf('  Lip-Violn: LB: %0.4f, next_val: %0.4f. ', ubnd, next_val);
+        new_L = 2 * (mbp_vals(l_idx) - next_val)/ distances(l_idx);
+        fprintf('  Lip-Violn: LB: %0.4f, next_val: %0.4f. ', lbnd, next_val);
         fprintf('Changing L to %0.4f from %0.4f\n', new_L, mbp_lipschitz_const);
         mbp_lipschitz_const = new_L;
       end

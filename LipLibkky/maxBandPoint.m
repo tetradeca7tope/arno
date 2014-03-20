@@ -42,13 +42,22 @@ function [chosen_pt] = maxBandPoint(X, y, L, phi, gradPhi, params)
     @plus, bsxfun(@times, rand(params.num_grad_desc_init_pts, num_dims), ...
                   (params.bounds(:,2) - params.bounds(:,1))'), ...
     params.bounds(:, 1)' );
+
   % Define the objective and the gradient of the objective
-  obj = @(t) -mbpObjective(t, X, y, phi, L, [0 1]);
+  obj = @(t) -mbpObjective(t, X, y, phi, L, params.bounds);
   gradObj = @(t) -mbpGradient(t, X, y, phi, gradPhi, L);
   % Parameters for Gradient Descent
   gd_params.num_iters = params.num_grad_desc_iters;
   gd_params.init_step_size = params.grad_desc_init_step_size;
   
+%     %% DEBUG
+%     plot(grad_desc_init_pts(:,1), grad_desc_init_pts(:,2), 'bo'); hold on,
+%     t = linspace(-1, 2, 100)'; [T1, T2] = meshgrid(t, t); th = [T1(:) T2(:)];
+%     ObjTh = zeros(size(T1));
+%     for i = 1:100, for j = 1:100, ObjTh(i,j)=obj([T1(i,j); T2(i,j)]); end,end
+%     contour(T1, T2, ObjTh);
+%     pause,
+
   % For storing the current best result
   curr_min_val = inf;
   curr_min_pt = grad_desc_init_pts(1, :)';
