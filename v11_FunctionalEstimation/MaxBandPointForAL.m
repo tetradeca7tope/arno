@@ -1,7 +1,7 @@
 % Script runs MaxBandPoint for Active Learning
 
 % Parameters for MaxBandPoint
-INIT_LIPSCHTIZ_CONST = 20; % set this to a small value initially 
+INIT_LIPSCHTIZ_CONST = 1; % set this to a small value initially 
 
 % TODO: repeating code in UncertaintyReduction.m. Fix This !
 if INIT_ON_GRID
@@ -28,23 +28,27 @@ mbp_error_prog.f4 = zeros(num_results_to_be_stored, 1);
 
 % Set some parameters for mbp
 phi = @exp; grad_phi = @exp; % use exponential transformation
-bounds = [-1 2];
 al_mbp_params.num_iters = 40;
 al_mbp_params.init_step_size = 0.25;
 % First obtain the points from Active Learning
 [mbp_pts, mbp_log_probs, mbp_lip_const] = alMaxBandPoint(evalLogJoint, ...
   initial_pts, initial_log_probs, phi, grad_phi, INIT_LIPSCHTIZ_CONST, ...
-  bounds, NUM_AL_ITERS, al_mbp_params);
+  PARAM_SPACE_BOUNDS, NUM_AL_ITERS, al_mbp_params);
 
   PLOT_LOCAL_OK = false;
 %   PLOT_LOCAL_OK = true;
   if PLOT_LOCAL_OK
     % Plot the points selected by mbp
     if NUM_DIMS == 1
-      plot(mbp_pts, mbp_vals, 'rx'); hold on,
+      plot(mbp_pts, mbp_log_probs, 'rx'); hold on,
+      th = linspace(PARAM_SPACE_BOUNDS(1), PARAM_SPACE_BOUNDS(2), 100)';
       plot(th, evalLogJoint(th), 'b-');
     else 
-      plot(mbp_pts(:,1), mbp_pts(:,2), 'rx');
+      plot(mbp_pts(:,1), mbp_pts(:,2), 'rx'); hold on,
+      axis([PARAM_SPACE_BOUNDS PARAM_SPACE_BOUNDS]);
+      pause;
+      plot2DFunction(evalLogJoint, [PARAM_SPACE_BOUNDS PARAM_SPACE_BOUNDS], ...
+                     'mesh');
     end
     title('Pts chosen by MBP');
     pause,
@@ -82,11 +86,13 @@ for mbp_iter = 1:num_results_to_be_stored
   hyper_params.meanFunc = @(arg) LOWEST_LOGLIKL_VAL;
   hyper_params.costFunc = cv_cost_func;
   [est_log_probs, ~, sigmaSmOpt, sigmaPrOpt] = GPKFoldCV(Xtr, Ytr, dummy_pt, ...
-    20, cv_candidates, hyper_params);
+    10, cv_candidates, hyper_params);
   opt_hyper_params = hyper_params;
   opt_hyper_params.sigmaSm = sigmaSmOpt;
   opt_hyper_params.sigmaPr = sigmaPrOpt;
-  logJointEst = @(arg) GPRegression(Xtr, Ytr, arg, opt_hyper_params);
+  runTimeParams.retFunc = true;
+  [~, ~, ~, logJointEst] = GPRegression(Xtr, Ytr, dummy_pt, ...
+    opt_hyper_params, runTimeParams);
   fprintf('sm: %0.4f, pr:%0.4f, ', sigmaSmOpt, sigmaPrOpt);
   fprintf('SmVals: (%.4f, %.4f), PrVals: (%.4f, %.4f)\n', ...
     cv_candidates.sigmaSmVals(1), cv_candidates.sigmaSmVals(end), ...
@@ -109,4 +115,28 @@ for mbp_iter = 1:num_results_to_be_stored
           mbp_err_prog.f3(mbp_iter), ...
           mbp_err_prog.f4(mbp_iter) );
   
+  PLOT_LOCAL_OK = false;
+%   PLOT_LOCAL_OK = true;
+  if PLOT_LOCAL_OK
+    % Plot the points selected by mbp
+    figure;
+    if NUM_DIMS == 1
+      plot(mbp_pts, mbp_log_probs, 'rx'); hold on,
+      th = linspace(PARAM_SPACE_BOUNDS(1), PARAM_SPACE_BOUNDS(2), 100)';
+      plot(th, evalLogJoint(th), 'b-');
+      plot(th, logJointEst(th), 'g-');
+    else 
+      plot3(mbp_pts(:,1), mbp_pts(:,2), mbp_log_probs, 'kx', 'MarkerSize', ...
+            10, 'LineWidth', 3); hold on,
+      axis([PARAM_SPACE_BOUNDS PARAM_SPACE_BOUNDS]);
+      pause;
+      plot2DFunction(evalLogJoint, [PARAM_SPACE_BOUNDS PARAM_SPACE_BOUNDS], ...
+                     'mesh', 'b');
+      plot2DFunction(logJointEst, [PARAM_SPACE_BOUNDS PARAM_SPACE_BOUNDS], ...
+                     'mesh', 'g');
+    end
+    title('Pts chosen by MBP');
+    pause,
+    close;
+  end
 end

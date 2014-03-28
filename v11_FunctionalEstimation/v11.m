@@ -10,19 +10,19 @@ addpath ../GPLibkky/
 addpath ../LipLibkky/
 
 % Constants
-NUM_DIMS = 10;
-LOWEST_LOGLIKL_VAL = -30;
-LOGLIKL_RANGE = 35;
+NUM_DIMS = 9;
+LOWEST_LOGLIKL_VAL = -40;
+LOGLIKL_RANGE = 50;
 
 DEBUG_MODE = false;
 % DEBUG_MODE = true;
 % Constants for Active Learning
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 1000;
+  NUM_AL_ITERS = 1500;
   NUM_MCMC_ITERS_FOR_EST = 150000;
   NUM_MCMC_BURNIN_FOR_EST = max(100, round(NUM_MCMC_ITERS_FOR_EST/2) );
-  NUM_EXPERIMENTS = 30;
-  STORE_RESULTS_EVERY = 20;
+  NUM_EXPERIMENTS = 2;
+  STORE_RESULTS_EVERY = 150;
 else
   NUM_AL_ITERS = 6;
   NUM_MCMC_ITERS_FOR_EST = 10;
@@ -33,7 +33,7 @@ end
 num_results_to_be_stored = NUM_AL_ITERS / STORE_RESULTS_EVERY;
 NUM_INIT_PTS_PER_DIM = 1;
 INIT_ON_GRID = false;
-MCMC_EST_PROPOSAL_STD = 0.5;
+MCMC_EST_PROPOSAL_STD = 0.5/sqrt(2) * sqrt(NUM_DIMS);
 MCMC_EST_INIT_PT = zeros(NUM_DIMS, 1);
 
 % Constants for MCMC
@@ -46,7 +46,8 @@ OPT_BANDWIDTH = 2.3* NUM_AL_ITERS^(-1/(1.3 + NUM_DIMS));
 OPT_SCALE = 50;
 NUM_KFOLD_CV_PARTITIONS = 20;
 functionals = {@f1, @f2, @f3, @f4};
-NOISE_LEVEL = 0.005
+NOISE_LEVEL = 0.05;
+PARAM_SPACE_BOUNDS = [-3 4];
 
 % parameters for the test
 p1 = 0.6;

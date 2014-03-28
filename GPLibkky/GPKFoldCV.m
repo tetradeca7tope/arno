@@ -72,7 +72,7 @@ function [kfold_likl] = KFoldExperiment(X, y, num_partitions, hyperParams)
     hyperParams.noise = orig_noise(train_indices);
     [mu, ~, K] = GPRegression(Xtr, ytr, Xte, hyperParams);
 %     curr_avg_log_likl = GPAvgLogLikelihood(mu, K, yte);
-    curr_avg_log_likl = sum(hyperParams.costFunc(mu, yte));
+    curr_avg_log_likl = - sum(hyperParams.costFunc(mu, yte));
     if isnan(curr_avg_log_likl)
       curr_avg_log_likl = -inf;
     end

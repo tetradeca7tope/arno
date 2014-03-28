@@ -1,4 +1,5 @@
-function [mu, stddev, K] = GPRegression(X, y, Xtest, hyperParams, runtimeParams)
+function [mu, stddev, K, funcH] = GPRegression(X, y, Xtest, hyperParams, ...
+                                              runtimeParams)
 % Function for performing Gaussian Process Regression. Uses a Gaussian kernel.
 
   sigmaSm = hyperParams.sigmaSm;
@@ -11,6 +12,7 @@ function [mu, stddev, K] = GPRegression(X, y, Xtest, hyperParams, runtimeParams)
   % Run time parameters
   if ~exist('runtimeParams', 'var'), runtimeParams = struct(); end
   if ~isfield(runtimeParams, 'plotOn'), runtimeParams.plotOn = false; end
+  if ~isfield(runtimeParams, 'retFunc'), runtimeParams.retFunc = false; end
 
   if isempty(noise)
     noise = zeros(size(X,1), 1);
@@ -26,7 +28,7 @@ function [mu, stddev, K] = GPRegression(X, y, Xtest, hyperParams, runtimeParams)
     meanX = meanX * ones(num_tr_data, 1);
     mean_Xte = mean_Xte * ones(num_te_data, 1);
   end
-  if num_tr_data <= 1000
+  if num_tr_data < inf
 %     fprintf('Inverting full matrix !\n');
     D11 = Dist2GP(X, X);
     K11 = sigmaPr * exp(-0.5*D11/sigmaSm^2);
@@ -49,10 +51,10 @@ function [mu, stddev, K] = GPRegression(X, y, Xtest, hyperParams, runtimeParams)
     % compute the predictions for each point separately.
     mu = zeros(num_te_data, 1);
     stddev = zeros(num_te_data, 1);
-    K = []; % don't return this. difficult ot compute.
+    K = []; % don't return this. difficult ot compute ?
 
     for te_iter = 1:num_te_data
-      xte = Xtest(te_iter, :);
+      xte = Xtest(te_iter, :)';
       dist2_to_tr = Dist2GP(X, xte'); 
       [~, sorted_idxs] = sort(dist2_to_tr);
       nbd = sorted_idxs(1:100);
@@ -76,6 +78,15 @@ function [mu, stddev, K] = GPRegression(X, y, Xtest, hyperParams, runtimeParams)
 
   end % else num_data < 100
 
+  if (runtimeParams.retFunc)
+  % Create a function handle so that the matrix need not be inverted all the
+  % time
+    funcH = @(Xte) GPFuncHandle(Xte, X, y, inv(K11 + diag(noise)), sigmaPr, ...
+                                sigmaSm, meanFunc); 
+  else
+    funcH = [];
+  end
+
   if (runtimeParams.plotOn && (size(X,2) ==1) )
     plot(X, y, 'kx', 'MarkerSize', 10); hold on,
     plot(Xtest, mu);
@@ -84,4 +95,14 @@ function [mu, stddev, K] = GPRegression(X, y, Xtest, hyperParams, runtimeParams)
     title('GP results: original points(kx), estimated vals(b),error(g--)');
   end
 
+end
+
+% This function will be passed as a function handle to the output
+function yte = GPFuncHandle(Xte, Xtr, Ytr, invK, sigmaPr, sigmaSm, meanFunc)
+  meanXte = meanFunc(Xte);
+  meanXtr = meanFunc(Xtr);
+
+  D12 = Dist2GP(Xtr, Xte);
+  K12 = sigmaPr * exp(-0.5*D12/sigmaSm^2);
+  yte = meanXte + K12' * invK * (Ytr - meanXtr);
 end

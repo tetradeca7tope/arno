@@ -9,7 +9,7 @@ function [loglikl, f_vals] = evalLogLiklExp1(X, sigma, p1, p2)
   
   likl = p1 * mvnpdf(X, M1, S) + p2*mvnpdf(X, M2, S);
   loglikl = log(likl);
-  loglikl = max(loglikl, -30);
+%   loglikl = max(loglikl, -30);
 
   % Now evaluate the functionals.
   P1 = p1/(p1 + p2);
