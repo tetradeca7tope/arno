@@ -36,8 +36,11 @@ function [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
     next_pt = maxBandPoint(mbp_pts, mbp_vals, mbp_lipschitz_const, phi, ...
                            gradPhi, params);
     next_val = oracle(next_pt');
-    fprintf('AL iter %d: val: %0.4f, pt: %s\n', ...
-            al_iter, next_val, mat2str(next_pt));
+    % print progress
+    if mod(al_iter, 20) == 0
+      fprintf('AL iter %d: val: %0.4f, pt: %s\n', ...
+              al_iter, next_val, mat2str(next_pt));
+    end
 
     % Check for violations on the Lipschitz assumption
     % Had you set too small a Lipschitz constant, incrase it.

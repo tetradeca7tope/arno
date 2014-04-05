@@ -58,13 +58,14 @@ al_mbp_params.init_step_size = 0.25;
 % functionals.
 for mbp_iter = 1:num_results_to_be_stored
 
+  curr_num_mbp_pts = mbp_iter * STORE_RESULTS_EVERY + num_initial_pts;
+  fprintf('MBP with %d pts: \n', curr_num_mbp_pts);
   % The regressors and regressands for the curent iteration
-  Xtr = mbp_pts(1:(mbp_iter * STORE_RESULTS_EVERY + num_initial_pts), :);
-  Ytr = mbp_log_probs( 1:(mbp_iter * STORE_RESULTS_EVERY + num_initial_pts) );
-  curr_num_mbp_pts = size(Xtr, 1);
+  Xtr = mbp_pts(1:curr_num_mbp_pts, :);
+  Ytr = mbp_log_probs( 1:curr_num_mbp_pts );
 
   % A dummy pt to obtain the optimal hyper parameters for regression via CV
-  dummy_pt = zeros(1, NUM_DIMS);
+%   dummy_pt = zeros(1, NUM_DIMS);
 
 %   % Obtain the function handle to be passed to MCMC
 %     % Kernel Regression
@@ -79,24 +80,26 @@ for mbp_iter = 1:num_results_to_be_stored
 %     logJointEst = @(arg) localPolyKRegression(arg, Xtr, Ytr, bw, poly_order);
 
   % GP Regression
-  cv_candidates.sigmaSmVals = logspace(-2, 2, 20)' * ...
-                           (1/curr_num_mbp_pts)^(1/5);
-  cv_candidates.sigmaPrVals = logspace(-1, 1, 10)' * LOGLIKL_RANGE;
-  hyper_params.noise = NOISE_LEVEL * ones(curr_num_mbp_pts, 1);
-  hyper_params.meanFunc = @(arg) LOWEST_LOGLIKL_VAL;
-  hyper_params.costFunc = cv_cost_func;
-  [est_log_probs, ~, sigmaSmOpt, sigmaPrOpt] = GPKFoldCV(Xtr, Ytr, dummy_pt, ...
-    10, cv_candidates, hyper_params);
-  opt_hyper_params = hyper_params;
-  opt_hyper_params.sigmaSm = sigmaSmOpt;
-  opt_hyper_params.sigmaPr = sigmaPrOpt;
-  runTimeParams.retFunc = true;
-  [~, ~, ~, logJointEst] = GPRegression(Xtr, Ytr, dummy_pt, ...
-    opt_hyper_params, runTimeParams);
-  fprintf('sm: %0.4f, pr:%0.4f, ', sigmaSmOpt, sigmaPrOpt);
-  fprintf('SmVals: (%.4f, %.4f), PrVals: (%.4f, %.4f)\n', ...
-    cv_candidates.sigmaSmVals(1), cv_candidates.sigmaSmVals(end), ...
-    cv_candidates.sigmaPrVals(1), cv_candidates.sigmaPrVals(end));
+  logJointEst = regressionWrap(Xtr, Ytr, NOISE_LEVEL, LOWEST_LOGLIKL_VAL, ...
+    LOGLIKL_RANGE, cv_cost_func);
+%   cv_candidates.sigmaSmVals = logspace(-2, 2, 20)' * ...
+%                            (1/curr_num_mbp_pts)^(1/5);
+%   cv_candidates.sigmaPrVals = logspace(-1, 1, 10)' * LOGLIKL_RANGE;
+%   hyper_params.noise = NOISE_LEVEL * ones(curr_num_mbp_pts, 1);
+%   hyper_params.meanFunc = @(arg) LOWEST_LOGLIKL_VAL;
+%   hyper_params.costFunc = cv_cost_func;
+%   [est_log_probs, ~, sigmaSmOpt, sigmaPrOpt] = GPKFoldCV(Xtr, Ytr, dummy_pt, ...
+%     10, cv_candidates, hyper_params);
+%   opt_hyper_params = hyper_params;
+%   opt_hyper_params.sigmaSm = sigmaSmOpt;
+%   opt_hyper_params.sigmaPr = sigmaPrOpt;
+%   runTimeParams.retFunc = true;
+%   [~, ~, ~, logJointEst] = GPRegression(Xtr, Ytr, dummy_pt, ...
+%     opt_hyper_params, runTimeParams);
+%   fprintf('sm: %0.4f, pr:%0.4f, ', sigmaSmOpt, sigmaPrOpt);
+%   fprintf('SmVals: (%.4f, %.4f), PrVals: (%.4f, %.4f)\n', ...
+%     cv_candidates.sigmaSmVals(1), cv_candidates.sigmaSmVals(end), ...
+%     cv_candidates.sigmaPrVals(1), cv_candidates.sigmaPrVals(end));
 
   % Now perform MCMC
   estimate_mcmc_samples = CustomMCMC( ...

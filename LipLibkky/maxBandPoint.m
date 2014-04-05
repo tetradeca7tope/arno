@@ -28,10 +28,10 @@ function [chosen_pt] = maxBandPoint(X, y, L, phi, gradPhi, params)
     params.bounds = [axis_lb, axis_ub];
   end
   if ~isfield(params, 'num_grad_desc_init_pts')
-    params.num_grad_desc_init_pts = min(10*2^num_dims, 200);
+    params.num_grad_desc_init_pts = min(30*2^num_dims, 400);
   end
   if ~isfield(params, 'num_grad_desc_iters')
-    params.num_grad_desc_iters = 20; 
+    params.num_grad_desc_iters = 2; % use few iterations
   end
   if ~isfield(params, 'grad_desc_init_step_size')
     params.grad_desc_init_step_size = 0.1;
@@ -62,13 +62,20 @@ function [chosen_pt] = maxBandPoint(X, y, L, phi, gradPhi, params)
   curr_min_val = inf;
   curr_min_pt = grad_desc_init_pts(1, :)';
   % Run gradient descent on all the init pts and obtain the maximum.
-  for gd_init_iter = 1:params.num_grad_desc_init_pts
-    curr_init_pt = grad_desc_init_pts(gd_init_iter, :)'; 
-    [fmin, xmin] = gradientDescent(obj, gradObj, curr_init_pt, gd_params);
-    if fmin < curr_min_val
-      curr_min_val = fmin;
-      curr_min_pt = xmin;
+  if params.num_grad_desc_iters > 0
+    for gd_init_iter = 1:params.num_grad_desc_init_pts
+      curr_init_pt = grad_desc_init_pts(gd_init_iter, :)'; 
+      [fmin, xmin] = gradientDescent(obj, gradObj, curr_init_pt, gd_params);
+      if fmin < curr_min_val
+        curr_min_val = fmin;
+        curr_min_pt = xmin;
+      end
     end
+  else
+  % pick the point with the lowest value  
+    obj_vals_at_init_pts = obj(grad_desc_init_pts);
+    [curr_min_val, min_idx] = min(obj_vals_at_init_pts);
+    curr_min_pt = grad_desc_init_pts(min_idx, :);
   end
 
   % Finally return the best point

@@ -8,7 +8,7 @@ addpath ../LipLibkky/
 % Define phi
 phi = @(x) exp(x); gradPhi = @(x) exp(x);
 % phi = @(x) x^2; gradPhi = @(x) 2*x;
-LIPSCHITZ_CONST = 100;
+LIPSCHITZ_CONST = 1;
 % For the experiments
 NUM_AL_PTS = 103;
 num_pts = 10;
