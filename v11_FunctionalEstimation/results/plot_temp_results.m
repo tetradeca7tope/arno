@@ -31,12 +31,14 @@ for i = 1:numel(functionals)
   mean_uc_err = mean(f_uc_err, 1);
   mean_mcmc_err = mean(f_mcmc_err, 1);
   mean_mbp_err = mean(f_mbp_err, 1);
-  mean_mcmc_err = mean(f_mcmc_reg_err, 1);
+  mean_mcmc_reg_err = mean(f_mcmc_reg_err, 1);
 
   plot(log(mean_mcmc_err), 'b-o'); hold on,
+  plot(log(mean_mcmc_reg_err), 'k-<');
   plot(log(mean_uc_err), 'r-x');
   plot(log(mean_mbp_err), 'g-s');
   title_str = sprintf('dimensions = %d\nfunctional = %s',  dim, func_desc{i});
+  legend('mcmc', 'mcmc-reg', 'uc', 'mbp');
   title(title_str);
 
 end

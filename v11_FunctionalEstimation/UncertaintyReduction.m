@@ -19,10 +19,10 @@ num_initial_pts = size(initial_pts, 1);
 % Initialize Active Learning
 uc_pts = initial_pts;
 % Error tracker for each functional
-uc_err_prog.f1 = zeros(NUM_AL_ITERS, 1);
-uc_err_prog.f2 = zeros(NUM_AL_ITERS, 1);
-uc_err_prog.f3 = zeros(NUM_AL_ITERS, 1);
-uc_err_prog.f4 = zeros(NUM_AL_ITERS, 1);
+uc_err_prog.f1 = zeros(num_results_to_be_stored, 1);
+uc_err_prog.f2 = zeros(num_results_to_be_stored, 1);
+uc_err_prog.f3 = zeros(num_results_to_be_stored, 1);
+uc_err_prog.f4 = zeros(num_results_to_be_stored, 1);
 
 % Now run Active Learning
 for uc_iter = 1:NUM_AL_ITERS
@@ -62,46 +62,48 @@ for uc_iter = 1:NUM_AL_ITERS
   uc_pts = [uc_pts; uc_max_pt];
 
   % Print some of the stuff out
-  fprintf('ITER: %d, Pt chosen: %s, \n==================\n', uc_iter, ...
-          mat2str(uc_max_pt));
+  if mod(uc_iter, 20) == 0
+    fprintf('ITER: %d, Pt chosen: %s, \n==================\n', uc_iter, ...
+            mat2str(uc_max_pt));
+  end
 
-  % Estimating Functionals
-  % ======================
-  fprintf('Estimating Functionals : ...');
-  % Now approximate the functionals using a sampling scheme
-  % First prepare the function to be passed to the MCMC procedure
-  % 1. First redo the GP regression to find the optimal hyper-params
-  cv_candidates.sigmaSmVals = logspace(-2, 2, 20)' * ...
-                           (1/num_uc_pts)^(1/5);
-  cv_candidates.sigmaPrVals = logspace(-1, 1, 10)' * LOGLIKL_RANGE;
-  [est_log_probs, ~, sigmaSmOpt, sigmaPrOpt] = GPKFoldCV(uc_pts(1:end-1, :), ...
-    uc_obs_log_joint_probs, uc_candidates, 20, cv_candidates, ...
-    hyper_params);
-  opt_hyper_params = hyper_params;
-  opt_hyper_params.sigmaSm = sigmaSmOpt;
-  opt_hyper_params.sigmaPr = sigmaPrOpt;
-  logJointEst = @(arg) GPRegression(uc_pts(1:end-1, :), ...
-    uc_obs_log_joint_probs, arg, opt_hyper_params);
-  fprintf('sm: %0.4f, pr:%0.4f, ', sigmaSmOpt, sigmaPrOpt);
-  fprintf('SmVals: (%.4f, %.4f), PrVals: (%.4f, %.4f)\n', ...
-    cv_candidates.sigmaSmVals(1), cv_candidates.sigmaSmVals(end), ...
-    cv_candidates.sigmaPrVals(1), cv_candidates.sigmaPrVals(end));
-
-  % 2. Now, perform MCMC
-  estimate_mcmc_samples = CustomMCMC( ...
-    NUM_MCMC_ITERS_FOR_EST + NUM_MCMC_BURNIN_FOR_EST, ...
-    MCMC_EST_PROPOSAL_STD, MCMC_EST_INIT_PT, logJointEst);
-  Xmcmc = estimate_mcmc_samples(NUM_MCMC_BURNIN_FOR_EST+1:end, :);
-  % Now evaluate the functionals on Xmcmc
-  T1 = f1(Xmcmc); uc_err_prog.f1(uc_iter) = abs(T1 - f_vals.S1)/abs(f_vals.S1);
-  T2 = f2(Xmcmc); uc_err_prog.f2(uc_iter) = abs(T2 - f_vals.S2)/abs(f_vals.S2); 
-  T3 = f3(Xmcmc); uc_err_prog.f3(uc_iter) = abs(T3 - f_vals.S3)/abs(f_vals.S3);
-  T4 = f4(Xmcmc); uc_err_prog.f4(uc_iter) = abs(T4 - f_vals.S4)/abs(f_vals.S4);
-  fprintf('emp-errors: f1: %f, f2: %f, f3: %f, f4: %f\n', ...
-          uc_err_prog.f1(uc_iter), ...
-          uc_err_prog.f2(uc_iter), ...
-          uc_err_prog.f3(uc_iter), ...
-          uc_err_prog.f4(uc_iter) );
+%   % Estimating Functionals
+%   % ======================
+%   fprintf('Estimating Functionals : ...');
+%   % Now approximate the functionals using a sampling scheme
+%   % First prepare the function to be passed to the MCMC procedure
+%   % 1. First redo the GP regression to find the optimal hyper-params
+%   cv_candidates.sigmaSmVals = logspace(-2, 2, 20)' * ...
+%                            (1/num_uc_pts)^(1/5);
+%   cv_candidates.sigmaPrVals = logspace(-1, 1, 10)' * LOGLIKL_RANGE;
+%   [est_log_probs, ~, sigmaSmOpt, sigmaPrOpt] = GPKFoldCV(uc_pts(1:end-1, :), ...
+%     uc_obs_log_joint_probs, uc_candidates, 20, cv_candidates, ...
+%     hyper_params);
+%   opt_hyper_params = hyper_params;
+%   opt_hyper_params.sigmaSm = sigmaSmOpt;
+%   opt_hyper_params.sigmaPr = sigmaPrOpt;
+%   logJointEst = @(arg) GPRegression(uc_pts(1:end-1, :), ...
+%     uc_obs_log_joint_probs, arg, opt_hyper_params);
+%   fprintf('sm: %0.4f, pr:%0.4f, ', sigmaSmOpt, sigmaPrOpt);
+%   fprintf('SmVals: (%.4f, %.4f), PrVals: (%.4f, %.4f)\n', ...
+%     cv_candidates.sigmaSmVals(1), cv_candidates.sigmaSmVals(end), ...
+%     cv_candidates.sigmaPrVals(1), cv_candidates.sigmaPrVals(end));
+% 
+%   % 2. Now, perform MCMC
+%   estimate_mcmc_samples = CustomMCMC( ...
+%     NUM_MCMC_ITERS_FOR_EST + NUM_MCMC_BURNIN_FOR_EST, ...
+%     MCMC_EST_PROPOSAL_STD, MCMC_EST_INIT_PT, logJointEst);
+%   Xmcmc = estimate_mcmc_samples(NUM_MCMC_BURNIN_FOR_EST+1:end, :);
+%   % Now evaluate the functionals on Xmcmc
+%   T1 = f1(Xmcmc); uc_err_prog.f1(uc_iter) = abs(T1 - f_vals.S1)/abs(f_vals.S1);
+%   T2 = f2(Xmcmc); uc_err_prog.f2(uc_iter) = abs(T2 - f_vals.S2)/abs(f_vals.S2); 
+%   T3 = f3(Xmcmc); uc_err_prog.f3(uc_iter) = abs(T3 - f_vals.S3)/abs(f_vals.S3);
+%   T4 = f4(Xmcmc); uc_err_prog.f4(uc_iter) = abs(T4 - f_vals.S4)/abs(f_vals.S4);
+%   fprintf('emp-errors: f1: %f, f2: %f, f3: %f, f4: %f\n', ...
+%           uc_err_prog.f1(uc_iter), ...
+%           uc_err_prog.f2(uc_iter), ...
+%           uc_err_prog.f3(uc_iter), ...
+%           uc_err_prog.f4(uc_iter) );
 
   % Plot out some of the results
   PLOT_OK_LOCAL = false;
@@ -131,15 +133,39 @@ for uc_iter = 1:NUM_AL_ITERS
     close;
   end
 
-  fprintf('\n');
-
 end
 
-% Plot the errors
-% figure;
-% plot(uc_err_prog.f1, 'b-o');
-% plot(uc_err_prog.f2, 'k-x');
-% plot(uc_err_prog.f3, 'g-s');
-% plot(uc_err_prog.f4, 'm-+');
-% legend('f1', 'f2', 'f3', 'f4');
+% Now compute functionals and obtain the results
+uc_log_probs = evalLogJoint(uc_pts);
+for uc_iter = 1:num_results_to_be_stored
+
+  curr_num_uc_pts = uc_iter * STORE_RESULTS_EVERY + num_initial_pts;
+  fprintf('UC with %d pts: \n', curr_num_uc_pts);
+  % The regressors and regressands
+  Xtr = uc_pts(1:curr_num_uc_pts, :);
+  Ytr = uc_log_probs(1:curr_num_uc_pts);
+
+  % Do GP regression
+  logJointEst = regressionWrap(Xtr, Ytr, NOISE_LEVEL, LOWEST_LOGLIKL_VAL, ...
+    LOGLIKL_RANGE, cv_cost_func);
+
+  % Now perform MCMC
+  % Now perform MCMC
+  estimate_mcmc_samples = CustomMCMC( ...
+    NUM_MCMC_ITERS_FOR_EST + NUM_MCMC_BURNIN_FOR_EST, ...
+    MCMC_EST_PROPOSAL_STD, MCMC_EST_INIT_PT, logJointEst);
+  Xmcmc = estimate_mcmc_samples(NUM_MCMC_BURNIN_FOR_EST+1:end, :);
+  % Now evaluate the functionals on Xmcmc
+  T1 = f1(Xmcmc); uc_err_prog.f1(uc_iter)= abs(T1 - f_vals.S1)/abs(f_vals.S1);
+  T2 = f2(Xmcmc); uc_err_prog.f2(uc_iter)= abs(T2 - f_vals.S2)/abs(f_vals.S2);
+  T3 = f3(Xmcmc); uc_err_prog.f3(uc_iter)= abs(T3 - f_vals.S3)/abs(f_vals.S3);
+  T4 = f4(Xmcmc); uc_err_prog.f4(uc_iter)= abs(T4 - f_vals.S4)/abs(f_vals.S4);
+  fprintf('Iter %d emp-errors: f1: %f, f2: %f, f3: %f, f4: %f\n', ...
+          uc_iter, ...
+          uc_err_prog.f1(uc_iter), ...
+          uc_err_prog.f2(uc_iter), ...
+          uc_err_prog.f3(uc_iter), ...
+          uc_err_prog.f4(uc_iter) );
+
+end
 

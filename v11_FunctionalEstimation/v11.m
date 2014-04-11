@@ -10,7 +10,7 @@ addpath ../GPLibkky/
 addpath ../LipLibkky/
 
 % Constants
-NUM_DIMS = 2;
+NUM_DIMS = 5;
 LOWEST_LOGLIKL_VAL = -40;
 LOGLIKL_RANGE = 50;
 
@@ -18,11 +18,11 @@ DEBUG_MODE = false;
 % DEBUG_MODE = true;
 % Constants for Active Learning
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 100;
+  NUM_AL_ITERS = 500;
   NUM_MCMC_ITERS_FOR_EST = 150000;
   NUM_MCMC_BURNIN_FOR_EST = max(100, round(NUM_MCMC_ITERS_FOR_EST/2) );
-  NUM_EXPERIMENTS = 2;
-  STORE_RESULTS_EVERY = 20;
+  NUM_EXPERIMENTS = 30;
+  STORE_RESULTS_EVERY = 50;
 else
   NUM_AL_ITERS = 6;
   NUM_MCMC_ITERS_FOR_EST = 10;
@@ -92,17 +92,15 @@ for experiment_iter = 1:NUM_EXPERIMENTS
 
   fprintf('EXPERIMENT: %d\n======================\n', experiment_iter);
 
-%   fprintf('UNCERT-REDUCTION\n');
-%   UncertaintyReduction;
-%   % Store Uncert-Reduction Results
-%   uc_errs.f1(experiment_iter, :) = uc_err_prog.f1';
-%   uc_errs.f2(experiment_iter, :) = uc_err_prog.f2';
-%   uc_errs.f3(experiment_iter, :) = uc_err_prog.f3';
-%   uc_errs.f4(experiment_iter, :) = uc_err_prog.f4';
+  fprintf('UNCERT-REDUCTION\n');
+  UncertaintyReduction;
+  uc_errs.f1(experiment_iter, :) = uc_err_prog.f1';
+  uc_errs.f2(experiment_iter, :) = uc_err_prog.f2';
+  uc_errs.f3(experiment_iter, :) = uc_err_prog.f3';
+  uc_errs.f4(experiment_iter, :) = uc_err_prog.f4';
 
   fprintf('MCMC\n');
   MCMCForPostEstimation;
-  % Store MCMC Results
   mcmc_errs.f1(experiment_iter, :) = mcmc_err_prog.f1';
   mcmc_errs.f2(experiment_iter, :) = mcmc_err_prog.f2';
   mcmc_errs.f3(experiment_iter, :) = mcmc_err_prog.f3';
@@ -116,7 +114,6 @@ for experiment_iter = 1:NUM_EXPERIMENTS
 
   fprintf('MAX-BAND-POINT');
   MaxBandPointForAL;
-  % Store mbp errors
   mbp_errs.f1(experiment_iter, :) = mbp_err_prog.f1';
   mbp_errs.f2(experiment_iter, :) = mbp_err_prog.f2';
   mbp_errs.f3(experiment_iter, :) = mbp_err_prog.f3';
