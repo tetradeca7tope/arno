@@ -11,8 +11,8 @@ addpath ../LipLibkky/
 
 % Constants
 NUM_DIMS = 5;
-LOWEST_LOGLIKL_VAL = -40;
-LOGLIKL_RANGE = 50;
+LOWEST_LOGLIKL_VAL = min(-40, -(NUM_DIMS-1)*10 -2);
+LOGLIKL_RANGE = max(40, (NUM_DIMS-1)*10);
 
 DEBUG_MODE = false;
 % DEBUG_MODE = true;
