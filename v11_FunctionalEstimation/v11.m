@@ -53,7 +53,10 @@ p2 = 1 - p1;
 sigma = 0.4*sqrt(NUM_DIMS); %+ 0.05*rand();
 PARAM_SPACE_BOUNDS = [-3.5*sigma, 1 + 3.5*sigma];
 MCMC_EST_PROPOSAL_STD = sigma;
-fprintf('Dims: %d, Bounds: %s\n', NUM_DIMS, mat2str(PARAM_SPACE_BOUNDS));
+
+% For saving results
+save_file_name = sprintf('results/res_d%d_%s.mat', NUM_DIMS, ...
+                         datestr(now, 'mm:dd-HH:MM:SS'));
 
 % Create function for evaluating joint likelihood and
 % obtain the True functional values
@@ -84,9 +87,9 @@ mbp_errs.f2 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
 mbp_errs.f3 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
 mbp_errs.f4 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
 
-% For saving results
-save_file_name = sprintf('results/res_d%d_%s.mat', NUM_DIMS, ...
-                         datestr(now, 'mm:dd-HH:MM'));
+% Print details of experiment before proceeding
+fprintf('Dims: %d, Bounds: %s\nFile: %s\n', ...
+  NUM_DIMS, mat2str(PARAM_SPACE_BOUNDS), save_file_name);
 
 for experiment_iter = 1:NUM_EXPERIMENTS
 
