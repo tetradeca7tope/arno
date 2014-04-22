@@ -22,7 +22,7 @@ if ~DEBUG_MODE
   NUM_MCMC_ITERS_FOR_EST = 150000;
   NUM_MCMC_BURNIN_FOR_EST = max(100, round(NUM_MCMC_ITERS_FOR_EST/2) );
   NUM_EXPERIMENTS = 30;
-  STORE_RESULTS_EVERY = 50;
+  STORE_RESULTS_EVERY = NUM_AL_ITERS/10;
 else
   NUM_AL_ITERS = 6;
   NUM_MCMC_ITERS_FOR_EST = 10;
@@ -41,7 +41,7 @@ num_mcmc_results_to_be_stored = NUM_MCMC_SAMPLES / STORE_RESULTS_EVERY;
 
 % RUN TIME HYPER-PARAMS
 USE_OPT_PARAMS = false;
-OPT_BANDWIDTH = 2.3* NUM_AL_ITERS^(-1/(1.3 + NUM_DIMS));
+OPT_BANDWIDTH = 0.5* NUM_AL_ITERS^(-1/(1.3 + NUM_DIMS));
 OPT_SCALE = 50;
 NUM_KFOLD_CV_PARTITIONS = 20;
 functionals = {@f1, @f2, @f3, @f4};
@@ -102,25 +102,25 @@ for experiment_iter = 1:NUM_EXPERIMENTS
   uc_errs.f3(experiment_iter, :) = uc_err_prog.f3';
   uc_errs.f4(experiment_iter, :) = uc_err_prog.f4';
 
-  fprintf('MCMC\n');
-  MCMCForPostEstimation;
-  mcmc_errs.f1(experiment_iter, :) = mcmc_err_prog.f1';
-  mcmc_errs.f2(experiment_iter, :) = mcmc_err_prog.f2';
-  mcmc_errs.f3(experiment_iter, :) = mcmc_err_prog.f3';
-  mcmc_errs.f4(experiment_iter, :) = mcmc_err_prog.f4';
-
-  fprintf('MCMC-REG\n');
-  mcmc_reg_errs.f1(experiment_iter, :) = mcmc_reg_err_prog.f1';
-  mcmc_reg_errs.f2(experiment_iter, :) = mcmc_reg_err_prog.f2';
-  mcmc_reg_errs.f3(experiment_iter, :) = mcmc_reg_err_prog.f3';
-  mcmc_reg_errs.f4(experiment_iter, :) = mcmc_reg_err_prog.f4';
-
-  fprintf('MAX-BAND-POINT');
-  MaxBandPointForAL;
-  mbp_errs.f1(experiment_iter, :) = mbp_err_prog.f1';
-  mbp_errs.f2(experiment_iter, :) = mbp_err_prog.f2';
-  mbp_errs.f3(experiment_iter, :) = mbp_err_prog.f3';
-  mbp_errs.f4(experiment_iter, :) = mbp_err_prog.f4';
+%   fprintf('MCMC\n');
+%   MCMCForPostEstimation;
+%   mcmc_errs.f1(experiment_iter, :) = mcmc_err_prog.f1';
+%   mcmc_errs.f2(experiment_iter, :) = mcmc_err_prog.f2';
+%   mcmc_errs.f3(experiment_iter, :) = mcmc_err_prog.f3';
+%   mcmc_errs.f4(experiment_iter, :) = mcmc_err_prog.f4';
+% 
+%   fprintf('MCMC-REG\n');
+%   mcmc_reg_errs.f1(experiment_iter, :) = mcmc_reg_err_prog.f1';
+%   mcmc_reg_errs.f2(experiment_iter, :) = mcmc_reg_err_prog.f2';
+%   mcmc_reg_errs.f3(experiment_iter, :) = mcmc_reg_err_prog.f3';
+%   mcmc_reg_errs.f4(experiment_iter, :) = mcmc_reg_err_prog.f4';
+% 
+%   fprintf('MAX-BAND-POINT');
+%   MaxBandPointForAL;
+%   mbp_errs.f1(experiment_iter, :) = mbp_err_prog.f1';
+%   mbp_errs.f2(experiment_iter, :) = mbp_err_prog.f2';
+%   mbp_errs.f3(experiment_iter, :) = mbp_err_prog.f3';
+%   mbp_errs.f4(experiment_iter, :) = mbp_err_prog.f4';
 
   % Save the results
   save(save_file_name, 'uc_errs', 'mcmc_errs', 'mcmc_reg_errs', 'mbp_errs');
