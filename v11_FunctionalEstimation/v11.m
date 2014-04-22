@@ -55,8 +55,9 @@ PARAM_SPACE_BOUNDS = [-3.5*sigma, 1 + 3.5*sigma];
 MCMC_EST_PROPOSAL_STD = sigma;
 
 % For saving results
-save_file_name = sprintf('results/res_d%d_%s.mat', NUM_DIMS, ...
-                         datestr(now, 'mm:dd-HH:MM:SS'));
+[~, hostname] = system('hostname');
+save_file_name = sprintf('results/res_d%d_%s_%s.mat', NUM_DIMS, ...
+                         datestr(now, 'mm:dd-HH:MM:SS'), hostname);
 
 % Create function for evaluating joint likelihood and
 % obtain the True functional values
@@ -93,8 +94,7 @@ fprintf('Dims: %d, Bounds: %s\nFile: %s\n', ...
 
 for experiment_iter = 1:NUM_EXPERIMENTS
 
-  fprintf('Host: %s, date/time: %s\n', system('hostname'), ...
-     datestr(now, 'mm:dd-HH:MM') );
+  fprintf('Host: %s, date/time: %s\n', hostname, datestr(now, 'mm:dd-HH:MM') );
   fprintf('EXPERIMENT: %d\n======================\n\n', experiment_iter);
 
   fprintf('UNCERT-REDUCTION\n');
