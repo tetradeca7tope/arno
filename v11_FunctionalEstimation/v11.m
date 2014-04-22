@@ -93,7 +93,9 @@ fprintf('Dims: %d, Bounds: %s\nFile: %s\n', ...
 
 for experiment_iter = 1:NUM_EXPERIMENTS
 
-  fprintf('EXPERIMENT: %d\n======================\n', experiment_iter);
+  fprintf('Host: %s, date/time: %s\n', system('hostname'), ...
+     datestr(now, 'mm:dd-HH:MM') );
+  fprintf('EXPERIMENT: %d\n======================\n\n', experiment_iter);
 
   fprintf('UNCERT-REDUCTION\n');
   UncertaintyReduction;
