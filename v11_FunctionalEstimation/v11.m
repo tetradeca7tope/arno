@@ -41,8 +41,13 @@ num_mcmc_results_to_be_stored = NUM_MCMC_SAMPLES / STORE_RESULTS_EVERY;
 
 % RUN TIME HYPER-PARAMS
 USE_OPT_PARAMS = false;
-OPT_BANDWIDTH = 0.5* NUM_AL_ITERS^(-1/(1.3 + NUM_DIMS));
-OPT_SCALE = 50;
+if NUM_DIMS == 5
+  OPT_BANDWIDTH = 2.5;
+  OPT_SCALE = 300;
+else
+  OPT_BANDWIDTH = 0.5* NUM_AL_ITERS^(-1/(1.3 + NUM_DIMS));
+  OPT_SCALE = 50;
+end
 NUM_KFOLD_CV_PARTITIONS = 20;
 functionals = {@f1, @f2, @f3, @f4};
 NOISE_LEVEL = 0.05;
@@ -56,8 +61,8 @@ MCMC_EST_PROPOSAL_STD = sigma;
 
 % For saving results
 [~, hostname] = system('hostname');
-save_file_name = sprintf('results/res_d%d_%s_%s.mat', NUM_DIMS, ...
-                         datestr(now, 'mm:dd-HH:MM:SS'), hostname);
+save_file_name = sprintf('results/res_d%d_%s.mat', NUM_DIMS, ...
+                         datestr(now, 'mm:dd-HH:MM:SS'));
 
 % Create function for evaluating joint likelihood and
 % obtain the True functional values

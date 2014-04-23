@@ -4,7 +4,7 @@ functionals = {'f1', 'f2', 'f3', 'f4'};
 func_desc = {'sum-i=1tod Xi', 'sum-i=1tod Xi^2', ...
   'sum-i=1to(d-1) Xi*X(i+1)*X(i+2)', 'sum-i=1to(d-2) Xi*X(i+1)'};
 
-q = sum( double( mcmc_errs.f1(:,1) > 0));
+% q = sum( double( mcmc_errs.f1(:,1) > 0));
 
 for i = 1:numel(functionals)
 
