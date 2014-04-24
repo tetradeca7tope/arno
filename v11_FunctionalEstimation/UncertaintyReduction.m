@@ -24,6 +24,9 @@ uc_err_prog.f2 = zeros(num_results_to_be_stored, 1);
 uc_err_prog.f3 = zeros(num_results_to_be_stored, 1);
 uc_err_prog.f4 = zeros(num_results_to_be_stored, 1);
 
+% Set the optimum bandwidth
+
+
 % Now run Active Learning
 for uc_iter = 1:NUM_AL_ITERS
 
@@ -34,6 +37,11 @@ for uc_iter = 1:NUM_AL_ITERS
   uc_obs_log_joint_probs = evalLogJoint(uc_pts);
 
   % al_candidates
+  uc_candidates = bsxfun( ...
+    @plus, bsxfun(@times, rand(NUM_AL_CANDIDATES, NUM_DIMS), ...
+                  (PARAM_SPACE_BOUNDS(:,2) - PARAM_SPACE_BOUNDS(:,1))'), ...
+    PARAM_SPACE_BOUNDS(:, 1)' );
+
   uc_candidates = -1 + 3*rand(NUM_AL_CANDIDATES, NUM_DIMS);
 
   % 2. Run GP Regression on the al candidates
