@@ -19,7 +19,6 @@ function plot2DFunction(f, range, plotType, plotArgs)
   fth = f(th);
   FTH = reshape(fth, res, res);
   if strcmp(plotType, 'mesh')
-    size(T1), size(T2), size(FTH),
     mesh(T1, T2, FTH);
   elseif strcmp(plotType, 'contour')
     contour(T1, T2, FTH, plotArgs);

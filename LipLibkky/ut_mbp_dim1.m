@@ -4,6 +4,7 @@
 close all;
 clear all;
 addpath ../LipLibkky/
+addpath ../helper/
 
 % Define phi
 phi = @(x) exp(x); gradPhi = @(x) exp(x);

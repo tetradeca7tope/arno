@@ -32,6 +32,7 @@ function [mbp_pts, mbp_vals, mbp_lipschitz_const] = alMaxBandPoint( ...
   mbp_lipschitz_const = initLipschitzConst;
   params.bounds = bounds; % As it is, I am passing all of params to maxBandPoint
 
+  fprintf('Performing alMaxBandPoint (dim = %d)\n', num_dims);
   for al_iter = 1:numALIters
     next_pt = maxBandPoint(mbp_pts, mbp_vals, mbp_lipschitz_const, phi, ...
                            gradPhi, params);
