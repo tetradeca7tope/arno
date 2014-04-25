@@ -102,12 +102,12 @@ for experiment_iter = 1:NUM_EXPERIMENTS
   fprintf('Host: %s, date/time: %s\n', hostname, datestr(now, 'mm:dd-HH:MM') );
   fprintf('EXPERIMENT: %d\n======================\n\n', experiment_iter);
 
-%   fprintf('UNCERT-REDUCTION\n');
-%   UncertaintyReduction;
-%   uc_errs.f1(experiment_iter, :) = uc_err_prog.f1';
-%   uc_errs.f2(experiment_iter, :) = uc_err_prog.f2';
-%   uc_errs.f3(experiment_iter, :) = uc_err_prog.f3';
-%   uc_errs.f4(experiment_iter, :) = uc_err_prog.f4';
+  fprintf('UNCERT-REDUCTION\n');
+  UncertaintyReduction;
+  uc_errs.f1(experiment_iter, :) = uc_err_prog.f1';
+  uc_errs.f2(experiment_iter, :) = uc_err_prog.f2';
+  uc_errs.f3(experiment_iter, :) = uc_err_prog.f3';
+  uc_errs.f4(experiment_iter, :) = uc_err_prog.f4';
 
 %   fprintf('MCMC\n');
 %   MCMCForPostEstimation;
@@ -116,11 +116,11 @@ for experiment_iter = 1:NUM_EXPERIMENTS
 %   mcmc_errs.f3(experiment_iter, :) = mcmc_err_prog.f3';
 %   mcmc_errs.f4(experiment_iter, :) = mcmc_err_prog.f4';
 
-  fprintf('MCMC-REG\n');
-  mcmc_reg_errs.f1(experiment_iter, :) = mcmc_reg_err_prog.f1';
-  mcmc_reg_errs.f2(experiment_iter, :) = mcmc_reg_err_prog.f2';
-  mcmc_reg_errs.f3(experiment_iter, :) = mcmc_reg_err_prog.f3';
-  mcmc_reg_errs.f4(experiment_iter, :) = mcmc_reg_err_prog.f4';
+%   fprintf('MCMC-REG\n');
+%   mcmc_reg_errs.f1(experiment_iter, :) = mcmc_reg_err_prog.f1';
+%   mcmc_reg_errs.f2(experiment_iter, :) = mcmc_reg_err_prog.f2';
+%   mcmc_reg_errs.f3(experiment_iter, :) = mcmc_reg_err_prog.f3';
+%   mcmc_reg_errs.f4(experiment_iter, :) = mcmc_reg_err_prog.f4';
 
 %   fprintf('MAX-BAND-POINT');
 %   MaxBandPointForAL;

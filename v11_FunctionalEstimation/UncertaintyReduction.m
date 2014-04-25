@@ -42,8 +42,6 @@ for uc_iter = 1:NUM_AL_ITERS
                   (PARAM_SPACE_BOUNDS(:,2) - PARAM_SPACE_BOUNDS(:,1))'), ...
     PARAM_SPACE_BOUNDS(:, 1)' );
 
-  uc_candidates = -1 + 3*rand(NUM_AL_CANDIDATES, NUM_DIMS);
-
   % 2. Run GP Regression on the al candidates
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % 2.1: Hyper parameters
