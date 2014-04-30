@@ -47,18 +47,22 @@ for uc_iter = 1:NUM_AL_ITERS
   % 2.1: Hyper parameters
   hyper_params.noise = NOISE_LEVEL * ones(num_uc_pts, 1);
   hyper_params.meanFunc = @(arg) LOWEST_LOGLIKL_VAL; 
-  if USE_OPT_PARAMS
-    cv_candidates.sigmaSmVals = OPT_BANDWIDTH;  % Use fixed bandwidth
-    cv_candidates.sigmaPrVals = OPT_SCALE;  % Use fixed bandwidth
-  else
-    cv_candidates.sigmaSmVals = logspace(-2, 2, 20)' * ...
-                             (num_initial_pts/num_uc_pts)^(1/5);
-    cv_candidates.sigmaPrVals = logspace(-1, 1, 10)' * LOGLIKL_RANGE;
-  end
-%   cv_candidates.sigmaSmVals = OPT_BANDWIDTH;  % Use fixed bandwidth
-  % GP Regression
-  [ucM, ucK, ~, ~] = GPKFoldCV(uc_pts, ...
-    uc_obs_log_joint_probs, uc_candidates, 10, cv_candidates, hyper_params);
+  hyper_params.sigmaSm = OPT_BANDWIDTH;
+  hyper_params.sigmaPr = OPT_SCALE;
+  [ucM, ~, ucK] = GPRegression(uc_pts, uc_obs_log_joint_probs, ...
+    uc_candidates, hyper_params);
+%   if USE_OPT_PARAMS
+%     cv_candidates.sigmaSmVals = OPT_BANDWIDTH;  % Use fixed bandwidth
+%     cv_candidates.sigmaPrVals = OPT_SCALE;  % Use fixed bandwidth
+%   else
+%     cv_candidates.sigmaSmVals = logspace(-2, 2, 20)' * ...
+%                              (num_initial_pts/num_uc_pts)^(1/5);
+%     cv_candidates.sigmaPrVals = logspace(-1, 1, 10)' * LOGLIKL_RANGE;
+%   end
+% %   cv_candidates.sigmaSmVals = OPT_BANDWIDTH;  % Use fixed bandwidth
+%   % GP Regression
+%   [ucM, ucK, ~, ~] = GPKFoldCV(uc_pts, ...
+%     uc_obs_log_joint_probs, uc_candidates, 10, cv_candidates, hyper_params);
 
   % 3. Now pick the best point
   ucS = diag(ucK);
