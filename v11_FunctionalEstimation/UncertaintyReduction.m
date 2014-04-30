@@ -58,7 +58,7 @@ for uc_iter = 1:NUM_AL_ITERS
 %   cv_candidates.sigmaSmVals = OPT_BANDWIDTH;  % Use fixed bandwidth
   % GP Regression
   [ucM, ucK, ~, ~] = GPKFoldCV(uc_pts, ...
-    uc_obs_log_joint_probs, uc_candidates, 20, cv_candidates, hyper_params);
+    uc_obs_log_joint_probs, uc_candidates, 10, cv_candidates, hyper_params);
 
   % 3. Now pick the best point
   ucS = diag(ucK);
