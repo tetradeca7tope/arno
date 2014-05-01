@@ -81,7 +81,8 @@ function [mu, stddev, K, funcH] = GPRegression(X, y, Xtest, hyperParams, ...
   if (runtimeParams.retFunc)
   % Create a function handle so that the matrix need not be inverted all the
   % time
-    funcH = @(Xte) GPFuncHandle(Xte, X, y, inv(K11 + diag(noise)), sigmaPr, ...
+    invMat = inv(K11 + diag(noise));
+    funcH = @(Xte) GPFuncHandle(Xte, X, y, invMat, sigmaPr, ...
                                 sigmaSm, meanFunc); 
   else
     funcH = [];
