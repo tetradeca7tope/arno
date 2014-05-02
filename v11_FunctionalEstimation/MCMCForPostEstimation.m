@@ -11,8 +11,8 @@ mcmc_err_prog.f3 = zeros(num_mcmc_results_to_be_stored, 1);
 mcmc_err_prog.f4 = zeros(num_mcmc_results_to_be_stored, 1);
 
 % Generate the samples from MCMC
-mcmc_samples = CustomMCMC(NUM_MCMC_SAMPLES, PROPOSAL_STD, MCMC_INIT_PT, ...
-  evalLogJoint);
+[mcmc_samples, mcmc_queries, mcmc_log_probs] = ...
+  CustomMCMC(NUM_MCMC_SAMPLES, PROPOSAL_STD, MCMC_INIT_PT, evalLogJoint);
 
 for mcmc_iter = 1: num_mcmc_results_to_be_stored
   T1 = f1(mcmc_samples(1:mcmc_iter * STORE_RESULTS_EVERY, :));
@@ -25,15 +25,12 @@ for mcmc_iter = 1: num_mcmc_results_to_be_stored
   mcmc_err_prog.f4(mcmc_iter) = abs(T4 - f_vals.S4)/abs(f_vals.S4);
 end
 
-% First evaluate the log likelihoods at all mcmc pts
-mcmc_log_probs = evalLogJoint(mcmc_samples);
-
 for mcmc_reg_iter = 1:num_results_to_be_stored
 
   curr_num_mcmc_pts = mcmc_reg_iter * STORE_RESULTS_EVERY;
   fprintf('MCMC-REG with %d points: \n', curr_num_mcmc_pts);
   % Obtain the regressors and the regressands for the current iteration
-  Xtr = mcmc_samples(1:curr_num_mcmc_pts, :);
+  Xtr = mcmc_queries(1:curr_num_mcmc_pts, :);
   Ytr = mcmc_log_probs(1:curr_num_mcmc_pts);
 
   % GP Regression

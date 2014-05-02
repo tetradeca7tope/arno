@@ -28,7 +28,7 @@ function [chosen_pt] = maxBandPoint(X, y, L, phi, gradPhi, params)
     params.bounds = [axis_lb, axis_ub];
   end
   if ~isfield(params, 'num_grad_desc_init_pts')
-    params.num_grad_desc_init_pts = min(30*2^num_dims, 400);
+    params.num_grad_desc_init_pts = min(30*2^num_dims, 1000);
   end
   if ~isfield(params, 'num_grad_desc_iters')
     params.num_grad_desc_iters = 2; % use few iterations

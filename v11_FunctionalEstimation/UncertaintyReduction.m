@@ -1,7 +1,7 @@
 % Uncertainty reduction query strategy for the problem
 
 % Parameter for Active Learning
-NUM_AL_CANDIDATES = 200;
+NUM_AL_CANDIDATES = 1000;
 
 if INIT_ON_GRID
   if NUM_INIT_PTS_PER_DIM == 1
