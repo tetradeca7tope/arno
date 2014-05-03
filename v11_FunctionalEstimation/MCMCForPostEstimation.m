@@ -1,7 +1,7 @@
 % MCMC for Posterior Estimation
 
 % Set parameters for MCMC
-PROPOSAL_STD = sigma;
+PROPOSAL_STD = 2.5*sigma;
 MCMC_INIT_PT = zeros(NUM_DIMS, 1);
 
 % Error tracker for each functional

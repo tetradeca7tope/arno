@@ -1,7 +1,7 @@
 % Script runs MaxBandPoint for Active Learning
 
 % Parameters for MaxBandPoint
-INIT_LIPSCHTIZ_CONST = 1; % set this to a small value initially 
+INIT_LIPSCHTIZ_CONST = 5; % set this to a small value initially 
 
 % TODO: repeating code in UncertaintyReduction.m. Fix This !
 if INIT_ON_GRID
