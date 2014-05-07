@@ -37,7 +37,9 @@ S2 = [3 -1; -1 4];
 Z = double(rand(N,1) < p1);
 X = [Z, Z] .* bsxfun(@plus, randn(N, 2) * chol(S1), mu1') + ...
     [1-Z, 1-Z] .* bsxfun(@plus, randn(N, 2) * chol(S2), mu2');
+fprintf('performing KDE\n');
 [~, f, bandwidth] = kde(X);
+fprintf('done KDE\n');
 % Pl0t the density.
 t = linspace(-10, 10, 1000)'; [T1, T2] = meshgrid(t, t); T =[T1(:), T2(:)];
 p = f(T); P = reshape(p, 1000, 1000);

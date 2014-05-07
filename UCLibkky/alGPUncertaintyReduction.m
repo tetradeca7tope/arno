@@ -46,9 +46,12 @@ function [ucPts, ucVals] = alGPUncertaintyReduction( oracle, initPts, ...
   ucPts = initPts;
   ucVals = initVals;
 
-  fprintf('Performing alMaxBandPoint (dim = %d)\n', numDims);
+  fprintf('Performing Uncert-Reduction (dim = %d)\n', numDims);
   for ucIter = 1:numALIters
 
+    if mod(ucIter, 20) == 0
+      fprintf('Uncert-Reduction iter %d/ %d\n', ucIter, numALIters);
+    end
     % prelims
     numUcPts = size(ucPts, 1);
 

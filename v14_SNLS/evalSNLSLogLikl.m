@@ -13,14 +13,21 @@ function [logJointProbs, lumMeans] = evalSNLSLogLikl(evalPts, obsData)
   % Prelims
   numPts = size(evalPts, 1);
   numObs = size(obsData, 1);
+
   % Decompose obsData
   z = obsData(:, 1);
   obs = obsData(:,2);
   obsErr = obsData(:,3);
+      % For Debugging only - set numObsToUse to numPts when running
+      % -----------------------------------------------------------
+      numObsToUse = numObs;
+      numObsToUse = 2;
+      useObs = obs(1:numObsToUse, :);
+      useObsErr = obsErr(1:numObsToUse, :);
   
   % Create arrays for storing the outputs
   logJointProbs = zeros(numPts, 1);
-  lumMeans = zeros(numPts, numObs);
+  lumMeans = zeros(numPts, numObsToUse);
 
   % Now iterate through each of the evalPts.
   % I could vectorize this, but that would make the code very less readable.
@@ -31,17 +38,23 @@ function [logJointProbs, lumMeans] = evalSNLSLogLikl(evalPts, obsData)
     H = evalPts(iter,1);
     OmegaM = evalPts(iter,2);
     OmegaL = evalPts(iter,3);
-    currLumMeans = zeros(numObs, 1); % for storing the computed means
+    currLumMeans = zeros(numObsToUse, 1); % for storing the computed means
     f = @(t) 1 ./ sqrt(OmegaM*(1+t).^3 + OmegaL); % function handle
 
     % compute the expected observation for each observation
-    for obsIter = 1:numObs
-      dL = LIGHT_SPEED * (1 + z(obsIter)) / H * integral(f, 0, z(obsIter));
+    for obsIter = 1:numObsToUse
+      t = linspace(0, z(obsIter), 200)';
+      dLIntegral = z(obsIter) * mean(f(t));
+      dL = LIGHT_SPEED * (1 + z(obsIter)) / H * dLIntegral;
+%       % Using matlab's Integrate - this is too slow
+%       dL = LIGHT_SPEED * (1 + z(obsIter)) / H * integral(f, 0, z(obsIter));
       currLumMeans(obsIter) = 5 * log10(dL) + 25;
     end
     % Now compute the log likelihood for each observation
-    obsLikl = normpdf(obs, currLumMeans, obsErr);
+    obsLikl = normpdf(useObs, currLumMeans, useObsErr);
     logJointProbs(iter) = sum(log(obsLikl));
+    % normalize so that we are still in the same range
+    logJointProbs(iter) = logJointProbs(iter) * numObs / numObsToUse;
     lumMeans(iter, :) = currLumMeans';
   end
 

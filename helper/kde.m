@@ -18,7 +18,9 @@ function [est_probs, f, h] = kde(X)
   % shuffle the data
   X = X(randperm(n), :);
 
-  silverman_h = 1.06 * std(X) / n^(-1/5);
+  stdX = std(X);
+  if stdX == 0, stdX = 1; end
+  silverman_h = 1.06 * stdX / n^(-1/5);
   candidate_hs = logspace(-2,2,10)' * silverman_h;
   num_cands = size(candidate_hs, 1);
 
@@ -35,7 +37,7 @@ function [est_probs, f, h] = kde(X)
 
   % finally prep results for returning
   h = best_h;
-  f = @(data) ( sum(GaussKernel(h, X, data))'/ n); 
+  f = @(data) kdeEstAtPts(data, X, h); % ( sum(GaussKernel(h, X, data))'/ n); 
   est_probs = f(X);
 
 end
@@ -57,11 +59,29 @@ function [cv_loglikl] = KFoldExperiment(X, h, num_partitions_kfoldcv)
     Xtr = X(train_indices, :);
     Xte = X(test_indices, :);
     % Compute the log likelihood
-    Pte = sum(GaussKernel(h, Xtr, Xte))' / n;
+    Pte = kdeEstAtPts(Xte, Xtr, h); % sum(GaussKernel(h, Xtr, Xte))' / n;
     avg_log_likl = sum(log(Pte)) / num_test_data;
     loglikl_accum = loglikl_accum + avg_log_likl;
   end
   cv_loglikl = loglikl_accum / num_partitions_kfoldcv;
 end
 
+function ests = kdeEstAtPts(pts, X, h)
+  numPts = size(pts, 1);
+  numData = size(X, 1);
+  ptsPerPartition = floor(1e7/numData);
 
+  % Now do the estimation
+  cumNumPts = 0;
+  ests = zeros(numPts, 1);
+  while cumNumPts < numPts
+    currNumPts = min(ptsPerPartition, numPts - cumNumPts);
+    ests(cumNumPts+1: cumNumPts + currNumPts) = ...
+      mean(GaussKernel(h, X, pts(cumNumPts+1: cumNumPts + currNumPts, :)))';
+    cumNumPts = cumNumPts + currNumPts;
+  end
+end
+
+% function est = kdeEstAtPt(pt, X, h)
+%   est = mean(GaussKernel(h, X, pt));
+% end
