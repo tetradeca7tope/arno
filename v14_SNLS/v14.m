@@ -28,13 +28,15 @@ evalPts = [g1(:), g2(:), g3(:)];
 % Create function handle for Evaluating Joing Log Likelihood and post prob
 fprintf('First obtaining True Posterior\n');
 snlsParamSpaceBounds = [60 80; 0 1; 0 1];
-snls = SNExperiment('davisdata.txt', snlsParamSpaceBounds);
+numObsToUse = []; % How many of the observations to use
+snls = SNExperiment('davisdata.txt', snlsParamSpaceBounds, numObsToUse);
 evalLogJoint = @(arg) snls.normCoordLogJointProbs(arg);
-truePostFile = sprintf('truePost_%d_%d_%d.txt', ...
-  snlsParamSpaceBounds(1,1), snlsParamSpaceBounds(1,2),  partitionRes);
+truePostFile = sprintf('truePost_nObs%d_res%d_H0%d-%d.txt', ...
+  numObsToUse, snlsParamSpaceBounds(1,1), snlsParamSpaceBounds(1,2),  ...
+  partitionRes);
 % Now evaluate the posterior at evalPts
     loadTruePostFromFile = false;
-    % loadTruePostFromFile = true;
+    loadTruePostFromFile = true;
 if ~loadTruePostFromFile
   [truePosterior, trueLogPostValsAtEvalPts, normConst] = ...
     obtainProbHandle(evalLogJoint, evalPts, paramSpaceBounds);
@@ -51,15 +53,11 @@ cvCostFunc = @(y1, y2) (exp(y1) - exp(y2)).^2;
 DEBUG_MODE = false;
 % DEBUG_MODE = true;
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 600;
-  NUM_MCMC_ITERS_FOR_EST = 100000;
-  NUM_MCMC_BURNIN_FOR_EST = 100;
+  NUM_AL_ITERS = 1500;
   NUM_EXPERIMENTS = 1;
-  STORE_RESULTS_EVERY = NUM_AL_ITERS/5;
+  STORE_RESULTS_EVERY = NUM_AL_ITERS/10;
 else
   NUM_AL_ITERS = 6;
-  NUM_MCMC_ITERS_FOR_EST = 10;
-  NUM_MCMC_BURNIN_FOR_EST = 10;
   NUM_EXPERIMENTS = 2;
   STORE_RESULTS_EVERY = 3;
 end
@@ -69,7 +67,7 @@ numResultsToBeStored = NUM_AL_ITERS / STORE_RESULTS_EVERY;
 numALCandidates = 1000;
 
 % Constants for MCMC
-NUM_MCMC_SAMPLES = 3*NUM_AL_ITERS;
+NUM_MCMC_SAMPLES = 4*NUM_AL_ITERS;
 numMCMCResultsToBeStored = NUM_MCMC_SAMPLES / STORE_RESULTS_EVERY;
 
 % Constants for the tests

@@ -1,14 +1,18 @@
 % Implements MCMC & MCMC Regression for the SNLS Experiment
 
-mcmcProposalStd = 4; % This is after the logit transform
-mcmcInitPt = zeros(numDims, 1);
+mcmcProposalStd = 0.1;
+mcmcInitPt = 0.5*ones(numDims, 1);
 
-% modify the log likelihood oracle to take the logit transform into account
-mcmcEvalLogJoint = @(t) evalLogJoint(logitinv(t));
-[logitMcmcSamples, logitMcmcQueries, mcmcLogProbs] = ...
-  CustomMCMC(NUM_MCMC_SAMPLES, mcmcProposalStd, mcmcInitPt, mcmcEvalLogJoint);
-mcmcSamples = logitinv(logitMcmcSamples);
-mcmcQueries = logitinv(logitMcmcQueries);
+% Don't do Logit
+%%%%%%%%%%%%%%%%
+% % modify the log likelihood oracle to take the logit transform into account
+% mcmcEvalLogJoint = @(t) evalLogJoint(logitinv(t));
+% [logitMcmcSamples, logitMcmcQueries, mcmcLogProbs] = ...
+%   CustomMCMC(NUM_MCMC_SAMPLES, mcmcProposalStd, mcmcInitPt, mcmcEvalLogJoint);
+% mcmcSamples = logitinv(logitMcmcSamples);
+% mcmcQueries = logitinv(logitMcmcQueries);
+[mcmcSamples, mcmcQueries, mcmcLogProbs] = CustomMCMC(NUM_MCMC_SAMPLES, ...
+  mcmcProposalStd, mcmcInitPt, evalLogJoint);
 
 % Now perform MCMC
 for mcmcResIter = 1:numMCMCResultsToBeStored

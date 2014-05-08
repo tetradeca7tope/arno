@@ -1,6 +1,6 @@
 % MaxBanPoint for SNLS
 
-initLipschitzConst = 12000; % I think this is an under estimate
+initLipschitzConst = 8000; % I think this is an under estimate
 
 % Set params for alMaxBandPoint
 phi = @exp; gradPhi = @exp;

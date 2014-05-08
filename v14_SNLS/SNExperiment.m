@@ -4,15 +4,19 @@ classdef SNExperiment < handle
     data; % the dataset being used
     paramSpaceBounds; % a numDims x 2 matrix giving the lower and upper bounds
                       % for each parameter.
+    numObsToUse; % The number of observations to use
     lowestLogLiklVal = -2000;
   end
 
   methods
 
     % Constructor
-    function obj = SNExperiment(dataFile, paramSpaceBounds)
+    function obj = SNExperiment(dataFile, paramSpaceBounds, numObsToUse)
       obj.data = load(dataFile);
       obj.paramSpaceBounds = paramSpaceBounds;
+      if isempty (numObsToUse), obj.numObsToUse = size(obj.data, 1);
+      else, obj.numObsToUse = numObsToUse;
+      end
     end
 
     function normCoords = getNormCoords(obj, trueCoords)
@@ -33,8 +37,19 @@ classdef SNExperiment < handle
     end
 
     function [logJointProbs, lumMeans] = trueCoordLogJointProbs(obj, evalPts)
-      [logJointProbs, lumMeans] = evalSNLSLogLikl(evalPts, obj.data);
-      logJointProbs = max(logJointProbs, obj.lowestLogLiklVal);
+      % Identify points that are outside the domain
+      belowDomain = sparse(bsxfun(@le, evalPts, obj.paramSpaceBounds(:,1)') );
+      aboveDomain = sparse(bsxfun(@ge, evalPts, obj.paramSpaceBounds(:,2)') );
+      outOfDomain = sum(belowDomain + aboveDomain, 2) > 0;
+      % Create params for returning
+      numPts = size(evalPts, 1);
+      logJointProbs = obj.lowestLogLiklVal * ones(numPts, 1);
+      lumMeans = -1000 * ones(numPts, obj.numObsToUse);
+      % Now compute at the points within the bounds
+      [inBoundLJPs, inBoundLMs] = evalSNLSLogLikl(evalPts(~outOfDomain, :), ...
+                                                   obj.data, obj.numObsToUse);
+      logJointProbs(~outOfDomain, :) = inBoundLJPs;
+      lumMeans(~outOfDomain, :) = inBoundLMs;
     end
 
   end % methods

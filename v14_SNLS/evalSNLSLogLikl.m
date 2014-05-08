@@ -1,7 +1,9 @@
-function [logJointProbs, lumMeans] = evalSNLSLogLikl(evalPts, obsData)
+function [logJointProbs, lumMeans] = evalSNLSLogLikl(evalPts, obsData, ...
+  numObsToUse)
 % evalPts in an numPts x 3 matrix. The first column is the Hubble constant, the
 % second is OmegaM(matter fraction) and the third is
-% OmegaL(dark energy fraction)
+% OmegaL(dark energy fraction). obsData is the observed data and numObsToUse is
+% the number of observations to use.
 % Output: 
 % logJointProbs is the log likelihood of the observations
 % lumMeans is the expected luminosity. It is a numPts x numObs matrix.
@@ -13,17 +15,15 @@ function [logJointProbs, lumMeans] = evalSNLSLogLikl(evalPts, obsData)
   % Prelims
   numPts = size(evalPts, 1);
   numObs = size(obsData, 1);
+  if isempty(numObsToUse)
+    numObsToUse = numObs;
+  end
 
   % Decompose obsData
-  z = obsData(:, 1);
-  obs = obsData(:,2);
-  obsErr = obsData(:,3);
-      % For Debugging only - set numObsToUse to numPts when running
-      % -----------------------------------------------------------
-      numObsToUse = numObs;
-      numObsToUse = 2;
-      useObs = obs(1:numObsToUse, :);
-      useObsErr = obsErr(1:numObsToUse, :);
+  useObsData = obsData(1:numObsToUse, :);
+  z = useObsData(:, 1);
+  obs = useObsData(:,2);
+  obsErr = useObsData(:,3);
   
   % Create arrays for storing the outputs
   logJointProbs = zeros(numPts, 1);
@@ -51,7 +51,7 @@ function [logJointProbs, lumMeans] = evalSNLSLogLikl(evalPts, obsData)
       currLumMeans(obsIter) = 5 * log10(dL) + 25;
     end
     % Now compute the log likelihood for each observation
-    obsLikl = normpdf(useObs, currLumMeans, useObsErr);
+    obsLikl = normpdf(obs, currLumMeans, obsErr);
     logJointProbs(iter) = sum(log(obsLikl));
     % normalize so that we are still in the same range
     logJointProbs(iter) = logJointProbs(iter) * numObs / numObsToUse;
