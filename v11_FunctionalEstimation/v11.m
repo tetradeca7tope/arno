@@ -61,8 +61,8 @@ MCMC_EST_PROPOSAL_STD = sigma;
 
 % For saving results
 [~, hostname] = system('hostname');
-save_file_name = sprintf('results/res_d%d_%s.mat', NUM_DIMS, ...
-                         datestr(now, 'mm:dd-HH:MM:SS'));
+save_file_name = sprintf('results/res_%d_d%d_%s.mat', ...
+  NUM_AL_ITERS, NUM_DIMS, datestr(now, 'mm:dd-HH:MM:SS'));
 
 % Create function for evaluating joint likelihood and
 % obtain the True functional values
