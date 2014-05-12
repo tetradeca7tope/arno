@@ -1,0 +1,14 @@
+Library for Actively Learning high valued functions using only a Lipschitz
+assumption.
+
+mbpObjective.m & mbpGradient.m: These functions construct function handles for
+the objective and gradient you are trying to minimize. To construct them you
+need to pass in the points at which you have already evaluated the funciton and
+the transformation.
+
+maxBandPoint.m : Function to pick the next point given the current points.
+
+alMaxBandPoint.m : Runs maxBandPoint iteratively to pick a bunch of points.
+
+ut_mbp_dim1 and ut_mbp_dim2 are unit tests in 1 and 2 dimensions respectively.
+

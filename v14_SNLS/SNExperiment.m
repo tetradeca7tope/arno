@@ -5,15 +5,17 @@ classdef SNExperiment < handle
     paramSpaceBounds; % a numDims x 2 matrix giving the lower and upper bounds
                       % for each parameter.
     numObsToUse; % The number of observations to use
-    lowestLogLiklVal = -2000;
+    lowestLogLiklVal;
   end
 
   methods
 
     % Constructor
-    function obj = SNExperiment(dataFile, paramSpaceBounds, numObsToUse)
+    function obj = SNExperiment(dataFile, paramSpaceBounds, numObsToUse, ...
+                                lowestLogLiklVal)
       obj.data = load(dataFile);
       obj.paramSpaceBounds = paramSpaceBounds;
+      obj.lowestLogLiklVal = lowestLogLiklVal;
       if isempty (numObsToUse), obj.numObsToUse = size(obj.data, 1);
       else, obj.numObsToUse = numObsToUse;
       end
@@ -48,7 +50,7 @@ classdef SNExperiment < handle
       % Now compute at the points within the bounds
       [inBoundLJPs, inBoundLMs] = evalSNLSLogLikl(evalPts(~outOfDomain, :), ...
                                                    obj.data, obj.numObsToUse);
-      logJointProbs(~outOfDomain, :) = inBoundLJPs;
+      logJointProbs(~outOfDomain, :) = max(inBoundLJPs, obj.lowestLogLiklVal);
       lumMeans(~outOfDomain, :) = inBoundLMs;
     end
 

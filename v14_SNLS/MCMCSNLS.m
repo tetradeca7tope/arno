@@ -1,7 +1,8 @@
 % Implements MCMC & MCMC Regression for the SNLS Experiment
 
-mcmcProposalStd = 0.1;
-mcmcInitPt = 0.5*ones(numDims, 1);
+mcmcProposalStd = 0.5;
+mcmcInitPt = 0.5*ones(numDims, 1); % init at centre point
+mcmcInitPt = [0.45; 0.24; 0.68]; % init at centre point
 
 % Don't do Logit
 %%%%%%%%%%%%%%%%
@@ -22,7 +23,7 @@ for mcmcResIter = 1:numMCMCResultsToBeStored
   currMCMCSamples = mcmcSamples(1:currNumMcmcPts, :);
   
   % Perform KDE
-  [~, mcmcProbEst] = kde01(currMCMCSamples);
+  [~, mcmcProbEst] = kde(currMCMCSamples);
   mcmcLogProbEstAtEvalPts = log(mcmcProbEst(evalPts));
 
   % Evaluate the KL

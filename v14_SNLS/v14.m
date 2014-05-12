@@ -13,7 +13,7 @@ addpath ../ABCLibkky/
 
 % Constants
 numDims = 3;
-lowestLogLiklVal = - 2000;
+lowestLogLiklVal = -1000;
 logLiklRange = 2000;
 paramSpaceBounds = [0 1; 0 1; 0 1]; % we are normalizing them later on
 % Constants for the tests
@@ -29,7 +29,8 @@ evalPts = [g1(:), g2(:), g3(:)];
 fprintf('First obtaining True Posterior\n');
 snlsParamSpaceBounds = [60 80; 0 1; 0 1];
 numObsToUse = []; % How many of the observations to use
-snls = SNExperiment('davisdata.txt', snlsParamSpaceBounds, numObsToUse);
+snls = SNExperiment('davisdata.txt', snlsParamSpaceBounds, numObsToUse, ...
+        lowestLogLiklVal);
 evalLogJoint = @(arg) snls.normCoordLogJointProbs(arg);
 truePostFile = sprintf('truePost_nObs%d_res%d_H0%d-%d.txt', ...
   numObsToUse, snlsParamSpaceBounds(1,1), snlsParamSpaceBounds(1,2),  ...
@@ -53,7 +54,7 @@ cvCostFunc = @(y1, y2) (exp(y1) - exp(y2)).^2;
 DEBUG_MODE = false;
 % DEBUG_MODE = true;
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 1500;
+  NUM_AL_ITERS = 500;
   NUM_EXPERIMENTS = 1;
   STORE_RESULTS_EVERY = NUM_AL_ITERS/10;
 else
@@ -67,7 +68,7 @@ numResultsToBeStored = NUM_AL_ITERS / STORE_RESULTS_EVERY;
 numALCandidates = 1000;
 
 % Constants for MCMC
-NUM_MCMC_SAMPLES = 4*NUM_AL_ITERS;
+NUM_MCMC_SAMPLES = 15*NUM_AL_ITERS;
 numMCMCResultsToBeStored = NUM_MCMC_SAMPLES / STORE_RESULTS_EVERY;
 
 % Constants for the tests
@@ -92,8 +93,8 @@ for experimentIter = 1:NUM_EXPERIMENTS
   fprintf('UNCERTAINTY REDUCTION\n');
   UncertaintyReductionSNLS;
 
-  fprintf('MAX-BAND-POINT\n');
-  MaxBandPointSNLS;
+%   fprintf('MAX-BAND-POINT\n');
+%   MaxBandPointSNLS;
 
   fprintf('MCMC\n');
   MCMCSNLS;

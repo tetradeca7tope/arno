@@ -8,6 +8,7 @@ function [logLiklVals] = galaxyLogLikelihoodWrap(evalAtPts, lowestLogLiklVal)
   numDims = size(evalAtPts, 2);
 
   logLiklVals = zeros(numPts, 1);
+
   % Now call the simulator iteratively.
   for iter = 1:numPts
     
