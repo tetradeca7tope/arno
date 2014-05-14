@@ -26,19 +26,19 @@ alm = mean(al);
 mcmcdm = mean(mcmcd);
 abcm = mean(abc);
 
-loglog(1:n1, alm, 'b-o'); hold on,
-loglog(1:n2, mcmcdm, 'm-d');
-loglog(1:n2, abcm, 'g-s');
+loglog(1:n1, alm, 'c-d'); hold on,
+loglog(1:n2, abcm, 'm-d');
+loglog(1:n2, mcmcdm, 'g-s');
 
 
-errorbar(1:n1, alm, std(al), 'Color', 'b');
-errorbar(1:n2, mcmcdm, std(real(mcmcd)), 'Color', 'm');
-errorbar(1:n2, abcm, std(real(abc)), 'Color', 'g');
+errorbar(1:n1, alm, std(al), 'Color', 'c');
+errorbar(1:n2, abcm, std(real(abc)), 'Color', 'm');
+errorbar(1:n2, mcmcdm, std(real(mcmcd)), 'Color', 'g');
 % peb = @(x, col) errorbar(1:num_pts, mean(log(x)), std(log(x)), 'Color', col);
 
 axis([1, 1000, 1e-6, 10^3.5]);
 
-legend('EDR', 'MCMC-D', 'ABC');
+legend('EDR', 'ABC', 'MCMC-D');
 xlabel('Number of Queries');
 ylabel('KL(true-post, est-post)');
 

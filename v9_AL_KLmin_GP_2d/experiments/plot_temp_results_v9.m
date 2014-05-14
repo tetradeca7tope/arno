@@ -32,21 +32,21 @@ figure; hold on,
 pkm(alm, 'b-o');
 pkm(bfm, 'g-s');
 pkm(mcm, 'r-x');
-pkm(abm, 'c-*');
+% pkm(abm, 'c-*');
 pkm(ucm, 'k-d');
 % pkm(mdm, 'm->');
 title({'KL vs #pts', 'Active Learning(b-o), Grid Search(g-s), MCMC(r-x)'});
 
 figure; hold on,
-plm(alm, 'b-o');
-plm(ucm, 'c-d');
+plm(alm, 'c-d');
+plm(ucm, 'b-o');
 plm(mcm, 'r-x');
 plm(bfm, 'g-s');
 % plm(abm, 'c-*');
 % plm(mdm, 'm->');
 if PLOT_ERROR_BARS
-  peb(alm, 'b');
-  peb(ucm, 'c');
+  peb(alm, 'c');
+  peb(ucm, 'd');
   peb(mcm, 'r');
   peb(bfm, 'g');
 %   peb(abm, 'c');

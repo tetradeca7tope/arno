@@ -38,23 +38,23 @@ pkm(ucm, 'k-d');
 title({'KL vs #pts', 'Active Learning(b-o), Grid Search(g-s), MCMC(r-x)'});
 
 figure; hold on,
-plm(alm, 'b-o');
-plm(ucm, 'c-d');
+plm(alm, 'c-d');
+plm(ucm, 'b-o');
 plm(mcm, 'r-x');
 plm(bfm, 'g-s');
 % plm(abm, 'c-*');
 % plm(mdm, 'm->');
 if PLOT_ERROR_BARS
-  peb(alm, 'b');
-  peb(ucm, 'c');
+  peb(alm, 'c');
+  peb(ucm, 'b');
   peb(mcm, 'r');
   peb(bfm, 'g');
 %   peb(abm, 'c');
 %   peb(mdm, 'm');
 end
 % title({'log(KL) vs #pts', 'AL(b-o), Grid Search(g-s), MCMC(r-x), ABC(c-*)'});
-axis([0 100 -10 3]);
-% axis([0 100 -12 7]);
+% axis([0 100 -10 3]);
+axis([0 100 -12 7]);
 % axis([0 100 -4 2.5]);
 xlabel('Number of Queries');
 ylabel('log(KL(true-post || est-post))');

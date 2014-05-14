@@ -29,7 +29,7 @@ function [est_probs, f, h] = kde(X)
   for cand_iter = 1:num_cands
     curr_h = candidate_hs(cand_iter);
     cv_loglikl = KFoldExperiment(X, curr_h, num_partitions_kfoldcv);
-    if cv_loglikl > best_likl
+    if cv_loglikl >= best_likl
       best_likl = cv_loglikl;
       best_h = curr_h;
     end

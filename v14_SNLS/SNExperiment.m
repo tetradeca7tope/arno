@@ -33,12 +33,14 @@ classdef SNExperiment < handle
       trueCoords = bsxfun(@plus, scaled, obj.paramSpaceBounds(:,1)');
     end
 
-    function [logJointProbs, lumMeans] = normCoordLogJointProbs(obj, evalPts)
-      [logJointProbs, lumMeans] = obj.trueCoordLogJointProbs( ...
-                                    obj.getTrueCoords(evalPts));
+    function [logJointProbs, lumNormSamples, lumSamples, lumMeans] = ...
+      normCoordLogJointProbs(obj, evalPts)
+      [logJointProbs, lumNormSamples, lumSamples, lumMeans] = ...
+        obj.trueCoordLogJointProbs(obj.getTrueCoords(evalPts));
     end
 
-    function [logJointProbs, lumMeans] = trueCoordLogJointProbs(obj, evalPts)
+    function  [logJointProbs, lumNormSamples, lumSamples, lumMeans] = ...
+      trueCoordLogJointProbs(obj, evalPts)
       % Identify points that are outside the domain
       belowDomain = sparse(bsxfun(@le, evalPts, obj.paramSpaceBounds(:,1)') );
       aboveDomain = sparse(bsxfun(@ge, evalPts, obj.paramSpaceBounds(:,2)') );
@@ -46,12 +48,17 @@ classdef SNExperiment < handle
       % Create params for returning
       numPts = size(evalPts, 1);
       logJointProbs = obj.lowestLogLiklVal * ones(numPts, 1);
+      inBoundNormSamples = -1000 * ones(numPts, 1);
+      inBoundSamples = -1000 * ones(numPts, obj.numObsToUse);
       lumMeans = -1000 * ones(numPts, obj.numObsToUse);
       % Now compute at the points within the bounds
-      [inBoundLJPs, inBoundLMs] = evalSNLSLogLikl(evalPts(~outOfDomain, :), ...
-                                                   obj.data, obj.numObsToUse);
+      [inBoundLJPs, inBoundNormSamples, inBoundSamples, inBoundLumMeans] = ...
+        evalSNLSLogLikl(evalPts(~outOfDomain, :), obj.data, obj.numObsToUse);
+
       logJointProbs(~outOfDomain, :) = max(inBoundLJPs, obj.lowestLogLiklVal);
-      lumMeans(~outOfDomain, :) = inBoundLMs;
+      lumNormSamples(~outOfDomain, :) = inBoundNormSamples;
+      lumSamples(~outOfDomain, :) = inBoundSamples;
+      lumMeans(~outOfDomain, :) = inBoundLumMeans;
     end
 
   end % methods

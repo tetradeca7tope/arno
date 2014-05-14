@@ -1,5 +1,4 @@
 % Script for running experiments on the SNLS dataset
-
 % Prelims
 clear all;
 close all;
@@ -54,7 +53,7 @@ cvCostFunc = @(y1, y2) (exp(y1) - exp(y2)).^2;
 DEBUG_MODE = false;
 % DEBUG_MODE = true;
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 500;
+  NUM_AL_ITERS = 100;
   NUM_EXPERIMENTS = 1;
   STORE_RESULTS_EVERY = NUM_AL_ITERS/10;
 else
@@ -68,7 +67,7 @@ numResultsToBeStored = NUM_AL_ITERS / STORE_RESULTS_EVERY;
 numALCandidates = 1000;
 
 % Constants for MCMC
-NUM_MCMC_SAMPLES = 15*NUM_AL_ITERS;
+NUM_MCMC_SAMPLES = 4*NUM_AL_ITERS;
 numMCMCResultsToBeStored = NUM_MCMC_SAMPLES / STORE_RESULTS_EVERY;
 
 % Constants for the tests
@@ -80,9 +79,12 @@ saveFileName = sprintf('snlsResults/snls_%s.mat', ...
 uc_errs = zeros(NUM_EXPERIMENTS, numResultsToBeStored);
 mbp_errs = zeros(NUM_EXPERIMENTS, numResultsToBeStored);
 mcmcReg_errs = zeros(NUM_EXPERIMENTS, numResultsToBeStored);
+rand_errs = zeros(NUM_EXPERIMENTS, numResultsToBeStored);
 % Larger arrays for MCMC and ABC
 mcmc_errs = zeros(NUM_EXPERIMENTS, numMCMCResultsToBeStored);
 abc_errs = zeros(NUM_EXPERIMENTS, numMCMCResultsToBeStored);
+% Store the normSample values for ABC too
+abc_norm_samples = zeros(NUM_EXPERIMENTS, numMCMCResultsToBeStored);
 
 % Now run the experiments
 for experimentIter = 1:NUM_EXPERIMENTS
@@ -99,9 +101,15 @@ for experimentIter = 1:NUM_EXPERIMENTS
   fprintf('MCMC\n');
   MCMCSNLS;
 
+  fprintf('\nABC\n');
+  ABCSNLS;
+
+  fprintf('\nRAND\n');
+  RandSampleSNLS;
+
   % Save the results
   save(saveFileName, 'uc_errs', 'mbp_errs', 'mcmc_errs', 'mcmcReg_errs', ...
-                     'abc_errs');
+                     'abc_errs', 'abc_norm_samples', 'rand_errs');
 
 end
 

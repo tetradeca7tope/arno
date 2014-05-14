@@ -1,5 +1,5 @@
-function [logJointProbs, lumMeans] = evalSNLSLogLikl(evalPts, obsData, ...
-  numObsToUse)
+function [logJointProbs, lumNormSamples, lumSamples, lumMeans] = ...
+  evalSNLSLogLikl(evalPts, obsData, numObsToUse)
 % evalPts in an numPts x 3 matrix. The first column is the Hubble constant, the
 % second is OmegaM(matter fraction) and the third is
 % OmegaL(dark energy fraction). obsData is the observed data and numObsToUse is
@@ -28,6 +28,8 @@ function [logJointProbs, lumMeans] = evalSNLSLogLikl(evalPts, obsData, ...
   % Create arrays for storing the outputs
   logJointProbs = zeros(numPts, 1);
   lumMeans = zeros(numPts, numObsToUse);
+  lumSamples = zeros(numPts, numObsToUse);
+  lumNormSamples = zeros(numPts, 1);
 
   % Now iterate through each of the evalPts.
   % I could vectorize this, but that would make the code very less readable.
@@ -56,6 +58,9 @@ function [logJointProbs, lumMeans] = evalSNLSLogLikl(evalPts, obsData, ...
     % normalize so that we are still in the same range
     logJointProbs(iter) = logJointProbs(iter) * numObs / numObsToUse;
     lumMeans(iter, :) = currLumMeans';
+    lumSamples(iter, :) = currLumMeans' + obsErr' .* randn(1, numObsToUse);
+    lumNormSamples(iter) = ...
+      sum( (lumSamples(iter, :) - obs')./obsErr' ) / sqrt(numObsToUse);
   end
 
 end
