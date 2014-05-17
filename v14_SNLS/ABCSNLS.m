@@ -12,7 +12,7 @@ for abcIter = 1:numMCMCResultsToBeStored
   currABCNormSamples = randNormSamples(1:currNumABCPts);
 
   % Perform ABC
-  selABCIdxs = abs(currABCNormSamples) < 0.1;
+  selABCIdxs = abs(currABCNormSamples) < 0.05;
   numSelPts = sum(selABCIdxs);
   selABCPts = currABCPts(selABCIdxs, :);
 

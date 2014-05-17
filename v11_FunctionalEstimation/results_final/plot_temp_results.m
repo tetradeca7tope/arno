@@ -45,20 +45,22 @@ for i = 1:numel(functionals)
   plot(log(mean_uc_err), 'r-x');
   plot(log(mean_mbp_err), 'g-s');
   title_str = sprintf('dimensions = %d\nfunctional = %s',  dim, func_desc{i});
-  legend('mcmc', 'mcmc-reg', 'uc', 'mbp');
+%   legend('mcmc', 'mcmc-reg', 'uc', 'mbp');
   title(title_str);
 
   figure; 
   loglog(50*(1:100)', mean_mcmc_err', 'g-s'); hold on,
   loglog(50*(1:10), mean_mcmc_reg_err, 'r-x');
   loglog(50*(1:10), mean_uc_err, 'b-o');
-%   legend('MCMC-DE', 'MCMC-R', 'VR');
+  legend('MCMC-DE', 'MCMC-R', 'VR');
 
   errorbar(50*(1:100), mean_mcmc_err, std_mcmc_err, 'Color', 'g');
   errorbar(50*(1:10), mean_mcmc_reg_err, std_mcmc_reg_err, 'Color', 'r');
   errorbar(50*(1:10), mean_uc_err, std_uc_err, 'Color', 'b' );
 
   axis([0 5000 0.01 4]);
+  xlabel('number of queries');
+  ylabel('relative error');
 
 end
 

@@ -1,5 +1,5 @@
 function [samples, queries, logProbs] = ...
-  GaussianMH(numSamples, proposalStd, initPt, evalLogProb)
+  CustomMCMC(numSamples, proposalStd, initPt, evalLogProb)
 % Returns: the samples collected by MCMC, the pts at which the likelihood was
 % quried and the logLikelihoods at those points.
 

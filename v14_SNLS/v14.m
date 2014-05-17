@@ -53,7 +53,7 @@ cvCostFunc = @(y1, y2) (exp(y1) - exp(y2)).^2;
 DEBUG_MODE = false;
 % DEBUG_MODE = true;
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 100;
+  NUM_AL_ITERS = 5000;
   NUM_EXPERIMENTS = 30;
   STORE_RESULTS_EVERY = NUM_AL_ITERS/10;
 else
@@ -67,7 +67,7 @@ numResultsToBeStored = NUM_AL_ITERS / STORE_RESULTS_EVERY;
 numALCandidates = 1000;
 
 % Constants for MCMC
-NUM_MCMC_SAMPLES = 4*NUM_AL_ITERS;
+NUM_MCMC_SAMPLES = 10*NUM_AL_ITERS;
 numMCMCResultsToBeStored = NUM_MCMC_SAMPLES / STORE_RESULTS_EVERY;
 
 % Constants for the tests
@@ -93,19 +93,19 @@ for experimentIter = 1:NUM_EXPERIMENTS
   fprintf('EXPERIMENT: %d\n==============================\n\n', experimentIter);
   
   fprintf('UNCERTAINTY REDUCTION\n');
-  UncertaintyReductionSNLS;
+%   UncertaintyReductionSNLS;
 
 %   fprintf('MAX-BAND-POINT\n');
 %   MaxBandPointSNLS;
 
   fprintf('MCMC\n');
-  MCMCSNLS;
+%   MCMCSNLS;
 
   fprintf('\nABC\n');
   ABCSNLS;
 
   fprintf('\nRAND\n');
-  RandSampleSNLS;
+%   RandSampleSNLS;
 
   % Save the results
   save(saveFileName, 'uc_errs', 'mbp_errs', 'mcmc_errs', 'mcmcReg_errs', ...
