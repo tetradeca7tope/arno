@@ -10,7 +10,7 @@ addpath ../GPLibkky/
 addpath ../LipLibkky/
 
 % Constants
-NUM_DIMS = 8;
+NUM_DIMS = 5;
 LOWEST_LOGLIKL_VAL = min(-40, -(NUM_DIMS-1)*10 -2);
 LOGLIKL_RANGE = max(40, (NUM_DIMS-1)*10);
 
@@ -18,7 +18,7 @@ DEBUG_MODE = false;
 % DEBUG_MODE = true;
 % Constants for Active Learning
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 1500;
+  NUM_AL_ITERS = 500;
   NUM_MCMC_ITERS_FOR_EST = 150000;
   NUM_MCMC_BURNIN_FOR_EST = max(100, round(NUM_MCMC_ITERS_FOR_EST/2) );
   NUM_EXPERIMENTS = 30;
@@ -28,7 +28,7 @@ else
   NUM_MCMC_ITERS_FOR_EST = 10;
   NUM_MCMC_BURNIN_FOR_EST = 2;
   NUM_EXPERIMENTS = 2;
-  STORE_RESULTS_EVERY = 2;
+  STORE_RESULTS_EVERY = 3;
 end
 num_results_to_be_stored = NUM_AL_ITERS / STORE_RESULTS_EVERY;
 NUM_INIT_PTS_PER_DIM = 1;
@@ -51,6 +51,9 @@ end
 NUM_KFOLD_CV_PARTITIONS = 20;
 functionals = {@f1, @f2, @f3, @f4};
 NOISE_LEVEL = 0.05;
+
+% Parameter for Active Learning
+NUM_AL_CANDIDATES = 1000;
 
 % parameters for the test
 p1 = 0.5;
@@ -92,6 +95,10 @@ mbp_errs.f1 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
 mbp_errs.f2 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
 mbp_errs.f3 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
 mbp_errs.f4 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
+rand_errs.f1 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
+rand_errs.f2 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
+rand_errs.f3 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
+rand_errs.f4 = zeros(NUM_EXPERIMENTS, num_results_to_be_stored);
 
 % Print details of experiment before proceeding
 fprintf('Dims: %d, Bounds: %s\nFile: %s\n', ...
@@ -102,35 +109,43 @@ for experiment_iter = 1:NUM_EXPERIMENTS
   fprintf('Host: %s, date/time: %s\n', hostname, datestr(now, 'mm:dd-HH:MM') );
   fprintf('EXPERIMENT: %d\n======================\n\n', experiment_iter);
 
-  fprintf('UNCERT-REDUCTION\n');
-  UncertaintyReduction;
-  uc_errs.f1(experiment_iter, :) = uc_err_prog.f1';
-  uc_errs.f2(experiment_iter, :) = uc_err_prog.f2';
-  uc_errs.f3(experiment_iter, :) = uc_err_prog.f3';
-  uc_errs.f4(experiment_iter, :) = uc_err_prog.f4';
+%   fprintf('UNCERT-REDUCTION\n');
+%   UncertaintyReduction;
+%   uc_errs.f1(experiment_iter, :) = uc_err_prog.f1';
+%   uc_errs.f2(experiment_iter, :) = uc_err_prog.f2';
+%   uc_errs.f3(experiment_iter, :) = uc_err_prog.f3';
+%   uc_errs.f4(experiment_iter, :) = uc_err_prog.f4';
+% 
+%   fprintf('MCMC\n');
+%   MCMCForPostEstimation;
+%   mcmc_errs.f1(experiment_iter, :) = mcmc_err_prog.f1';
+%   mcmc_errs.f2(experiment_iter, :) = mcmc_err_prog.f2';
+%   mcmc_errs.f3(experiment_iter, :) = mcmc_err_prog.f3';
+%   mcmc_errs.f4(experiment_iter, :) = mcmc_err_prog.f4';
+% 
+%   fprintf('MCMC-REG\n');
+%   mcmc_reg_errs.f1(experiment_iter, :) = mcmc_reg_err_prog.f1';
+%   mcmc_reg_errs.f2(experiment_iter, :) = mcmc_reg_err_prog.f2';
+%   mcmc_reg_errs.f3(experiment_iter, :) = mcmc_reg_err_prog.f3';
+%   mcmc_reg_errs.f4(experiment_iter, :) = mcmc_reg_err_prog.f4';
+% 
+%   fprintf('MAX-BAND-POINT');
+%   MaxBandPointForAL;
+%   mbp_errs.f1(experiment_iter, :) = mbp_err_prog.f1';
+%   mbp_errs.f2(experiment_iter, :) = mbp_err_prog.f2';
+%   mbp_errs.f3(experiment_iter, :) = mbp_err_prog.f3';
+%   mbp_errs.f4(experiment_iter, :) = mbp_err_prog.f4';
 
-  fprintf('MCMC\n');
-  MCMCForPostEstimation;
-  mcmc_errs.f1(experiment_iter, :) = mcmc_err_prog.f1';
-  mcmc_errs.f2(experiment_iter, :) = mcmc_err_prog.f2';
-  mcmc_errs.f3(experiment_iter, :) = mcmc_err_prog.f3';
-  mcmc_errs.f4(experiment_iter, :) = mcmc_err_prog.f4';
-
-  fprintf('MCMC-REG\n');
-  mcmc_reg_errs.f1(experiment_iter, :) = mcmc_reg_err_prog.f1';
-  mcmc_reg_errs.f2(experiment_iter, :) = mcmc_reg_err_prog.f2';
-  mcmc_reg_errs.f3(experiment_iter, :) = mcmc_reg_err_prog.f3';
-  mcmc_reg_errs.f4(experiment_iter, :) = mcmc_reg_err_prog.f4';
-
-  fprintf('MAX-BAND-POINT');
-  MaxBandPointForAL;
-  mbp_errs.f1(experiment_iter, :) = mbp_err_prog.f1';
-  mbp_errs.f2(experiment_iter, :) = mbp_err_prog.f2';
-  mbp_errs.f3(experiment_iter, :) = mbp_err_prog.f3';
-  mbp_errs.f4(experiment_iter, :) = mbp_err_prog.f4';
+  fprintf('RAND\n');
+  RandForFuncEstimation;
+  rand_errs.f1(experiment_iter, :) = rand_err_prog.f1';
+  rand_errs.f2(experiment_iter, :) = rand_err_prog.f2';
+  rand_errs.f3(experiment_iter, :) = rand_err_prog.f3';
+  rand_errs.f4(experiment_iter, :) = rand_err_prog.f4';
 
   % Save the results
-  save(save_file_name, 'uc_errs', 'mcmc_errs', 'mcmc_reg_errs', 'mbp_errs');
+  save(save_file_name, 'uc_errs', 'mcmc_errs', 'mcmc_reg_errs', 'mbp_errs', ...
+    'rand_errs');
   % copy to a file named temp
   copyCmd = sprintf('cp %s results/temp.mat', save_file_name); system(copyCmd);
 
