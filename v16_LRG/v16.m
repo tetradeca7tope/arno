@@ -15,7 +15,7 @@ loadConstants;
 
 % Obtain an estimate of the ground truth
 obtainGroundTruth = true;
-% obtainGroundTruth = false;
+obtainGroundTruth = false;
 if obtainGroundTruth
   tic,
   obtainGroundTruthKL;
@@ -29,18 +29,22 @@ end
 
 for experimentIter = 1:NUM_EXPERIMENTS
 
+  fprintf('\nExperiment #%d\n', experimentIter);
+
   fprintf('Uncertainty Reduction\n');
   UncertaintyReductionForLRG;
 
   % Before running MBP reduce numALCandidates to 1000.
-  fprintf('Max Band Point\n');
-  MaxBandPointForLRG;
+%   fprintf('Max Band Point\n');
+%   MaxBandPointForLRG;
 
   fprintf('MCMC\n');
   MCMCForLRG;
 
   fprintf('RAND\n');
   RANDForLRG;
+
+  fprintf('\n');
 
 end
 

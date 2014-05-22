@@ -20,6 +20,10 @@ samplesEstEval = samplesEstEval( randperm(2*numSamplesEstEval), :);
 % Split into two
 samplesEstDensity = samplesEstEval(1:numSamplesEstEval, :);
 klEvalPts = samplesEstEval( (numSamplesEstEval+1):end, :);
+% print out some info
+numUniqueSamples = size( unique(klEvalPts(:, 1)), 1);
+fprintf('#unique-samples/#total-samples: %d/%d = %.3f', ...
+  numUniqueSamples, numSamplesEstEval, numUniqueSamples/numSamplesEstEval);
 
 % Now do a KDE
 fprintf('Performing KDE\n');

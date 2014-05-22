@@ -33,19 +33,23 @@ gpFitParams.logLiklRange = logLiklRange;
 
 % Parameters for active learning
 numALCandidates = 2000;
+alInitPts = lrgExp.getNormCoords([0 0.762 0.1045 0.02233 0.951 0.6845 0 1.908]);
+alInitLogProbs = evalLogJoint(alInitPts);
+fprintf('Initing with logp = %s at %s\n', ...
+  mat2str(alInitLogProbs), mat2str(alInitPts) );
 
 % Constants for MaxBandPoint
 initLipschitzConstant = logLiklRange/ (sqrt(numDims) * 2);
 initLipschitzConstant = 500; %logLiklRange/ (sqrt(numDims) * 2);
 
 % Parameters for Uncertainty Reduction
-alBandwidth = 1.5 * NUM_AL_ITERS ^ (-1 /(1.5 + numDims));
+alBandwidth = 1.5 * NUM_AL_ITERS ^ (-1 /(1.3 + numDims));
 % the constant 2.5 works well in front
 alScale = logLiklRange/2;
 
 % Parameters for MCMC
 NUM_MCMC_SAMPLES = 6 * NUM_AL_ITERS;
-mcmcProposalStd = 2; % after the logit transform
+mcmcProposalStd = 0.05; % after the logit transform
 mcmcInitPt = logit( ...
   lrgExp.getNormCoords([0 0.762 0.1045 0.02233 0.951 0.6845 0 1.908])  )';
 numMCMCResultsToBeStored = NUM_MCMC_SAMPLES / STORE_RESULTS_EVERY;
@@ -71,7 +75,8 @@ evalMCMCProposalStd = mcmcProposalStd; % No reason to use anything else
 evalMCMCInitPt = logit( ...
   lrgExp.getNormCoords([0 0.762 0.1045 0.02233 0.951 0.6845 0 1.908])  )';
 evalMCMCLogJoint = @(t) evalLogJoint(logitinv(t));
-gtFile = sprintf('groundTruthKL_%d.mat', numSamplesEstEval);
+gtFile = sprintf('groundTruthKL_%d_%.3f.mat', numSamplesEstEval, ...
+                 evalMCMCProposalStd);
 % Create this structure for convenience
 evalMCMCParams.evalMCMCProposalStd = evalMCMCProposalStd;
 evalMCMCParams.evalMCMCInitPt = evalMCMCInitPt;

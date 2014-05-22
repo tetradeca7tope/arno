@@ -1,4 +1,4 @@
-function [kl, logJointEst, probEst] = evalRegMethodKLProgress( Xtr, Ytr, ...
+function [kl, logJointEst, probEst, l2] = evalRegMethodKLProgress( Xtr, Ytr, ...
   gpFitParams, klEvalPts, truePAtEvalPts, evalMCMCParams, optKDEBandWidth)
 % This is essentially a utility function for VR, MBP, MCMC-REG and RAND.
 % It does the following in order
@@ -40,6 +40,7 @@ function [kl, logJointEst, probEst] = evalRegMethodKLProgress( Xtr, Ytr, ...
   [~, probEst] = kde01(mcmcSamples, optKDEBandWidth);
 
   % Finally obtain the KL
-  kl = estimKLForLRG(klEvalPts, truePAtEvalPts, probEst);
+  [kl, l2] = estimKLForLRG(klEvalPts, truePAtEvalPts, probEst);
   
 end  
+
