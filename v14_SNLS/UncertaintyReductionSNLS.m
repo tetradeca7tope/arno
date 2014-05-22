@@ -2,6 +2,7 @@
 
 % Params
 alBandwidth = 0.5 * NUM_AL_ITERS ^ (-1/(1.3 + numDims) );
+alBandwidth = 0.5 * 800 ^ (-1/(1.3 + numDims) );
 alScale = 2000;
 
 % First obtain the points via Active Learning

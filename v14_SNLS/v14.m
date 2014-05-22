@@ -53,9 +53,9 @@ cvCostFunc = @(y1, y2) (exp(y1) - exp(y2)).^2;
 DEBUG_MODE = false;
 % DEBUG_MODE = true;
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 5000;
-  NUM_EXPERIMENTS = 30;
-  STORE_RESULTS_EVERY = NUM_AL_ITERS/10;
+  NUM_AL_ITERS = 1600;
+  NUM_EXPERIMENTS = 1;
+  STORE_RESULTS_EVERY = NUM_AL_ITERS/1;
 else
   NUM_AL_ITERS = 6;
   NUM_EXPERIMENTS = 2;
@@ -93,7 +93,7 @@ for experimentIter = 1:NUM_EXPERIMENTS
   fprintf('EXPERIMENT: %d\n==============================\n\n', experimentIter);
   
   fprintf('UNCERTAINTY REDUCTION\n');
-%   UncertaintyReductionSNLS;
+  UncertaintyReductionSNLS;
 
 %   fprintf('MAX-BAND-POINT\n');
 %   MaxBandPointSNLS;
@@ -102,7 +102,7 @@ for experimentIter = 1:NUM_EXPERIMENTS
 %   MCMCSNLS;
 
   fprintf('\nABC\n');
-  ABCSNLS;
+%   ABCSNLS;
 
   fprintf('\nRAND\n');
 %   RandSampleSNLS;

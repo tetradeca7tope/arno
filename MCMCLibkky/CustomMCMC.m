@@ -13,6 +13,9 @@ function [samples, queries, logProbs] = ...
   currLogProb = evalLogProb(currPt');
 
   for sample_iter = 1:numSamples
+%     if mod(sample_iter, 1000) == 0,
+%       fprintf('MCMC Iter: %d\n', sample_iter);
+%     end
     nextPt = currPt + proposalStd * randn(num_dims, 1);
     nextLogProb = evalLogProb(nextPt');
     queries(sample_iter, :) = nextPt;

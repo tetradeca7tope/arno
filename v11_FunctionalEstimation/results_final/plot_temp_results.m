@@ -59,8 +59,8 @@ for i = 1:numel(functionals)
   errorbar(50*(1:10), mean_uc_err, std_uc_err, 'Color', 'b' );
 
   axis([0 5000 0.01 4]);
-  xlabel('number of queries');
-  ylabel('relative error');
+  xlabel('# Queries');
+  ylabel('Relative Error');
 
-end
+End
 
