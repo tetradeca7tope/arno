@@ -30,6 +30,8 @@ end
 for experimentIter = 1:NUM_EXPERIMENTS
 
   fprintf('\nExperiment #%d\n', experimentIter);
+  fprintf('Evaluating with %d pts, %.4f bw\n', numSamplesEstEval, ...
+    evalMCMCProposalStd)
 
   fprintf('Uncertainty Reduction\n');
   UncertaintyReductionForLRG;

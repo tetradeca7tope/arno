@@ -8,29 +8,41 @@
 % When we obtain an estimate we will be evaluating on points obtained in the
 % second half.
 
+% Don't need to do a KDE if you are just doing mmd
+DOING_MMD = true;
+% DOING_MMD = false;
+
 % Perform MCMC to collect samples
-fprintf('Collecting Samples\n');
-totalNumSamplesEstEval = numBurninSampleEstEval + 2*numSamplesEstEval;
+fprintf('Collecting %d Samples with bw: %0.4f\n', numSamplesEstEval, ...
+  evalMCMCInitPt);
+
+if ~DOING_MMD
+  totalNumSamplesEstEval = numBurninSampleEstEval + 2*numSamplesEstEval;
+else 
+  totalNumSamplesEstEval = numBurninSampleEstEval + numSamplesEstEval;
+end
+  
+% Collect the samples
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [samplesEstEval, queriesEstEval, logPsEstEval] = CustomMCMC( ...
-  totalNumSamplesEstEval, evalMCMCProposalStd, evalMCMCInitPt,evalMCMCLogJoint);
+  totalNumSamplesEstEval, evalMCMCProposalStd, evalMCMCInitPt, ...
+  evalMCMCLogJoint);
 % Remove burnin, and then shuffle
 samplesEstEval = logitinv(samplesEstEval);
 samplesEstEval = samplesEstEval( (numBurninSampleEstEval+1): end, :);
-samplesEstEval = samplesEstEval( randperm(2*numSamplesEstEval), :);
+  % print out some info
+  numUniqueSamples = size( unique(samplesEstEval(:, 1)), 1);
+  fprintf('#unique-samples/#total-samples: %d/%d = %.3f', ...
+    numUniqueSamples, numSamplesEstEval, numUniqueSamples/numSamplesEstEval);
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Split into two
-samplesEstDensity = samplesEstEval(1:numSamplesEstEval, :);
-klEvalPts = samplesEstEval( (numSamplesEstEval+1):end, :);
-% print out some info
-numUniqueSamples = size( unique(klEvalPts(:, 1)), 1);
-fprintf('#unique-samples/#total-samples: %d/%d = %.3f', ...
-  numUniqueSamples, numSamplesEstEval, numUniqueSamples/numSamplesEstEval);
+if ~DOING_MMD
 
-% Don't need to do a KDE if you are just doing mmd
-DOING_MMD = true;
-DOING_MMD = false;
+  % Shuffle & Split into two
+  samplesEstEval = samplesEstEval( randperm(2*numSamplesEstEval), :);
+  samplesEstDensity = samplesEstEval(1:numSamplesEstEval, :);
+  klEvalPts = samplesEstEval( (numSamplesEstEval+1):end, :);
 
-if DOING_MMD
   % Now do a KDE
   fprintf('Performing KDE\n');
   [~, truePostEst, optKDEBandWidth] = kde01(samplesEstDensity);
@@ -38,10 +50,14 @@ if DOING_MMD
   % Evaluate the estimated density at the other half
   fprintf('Evaluating estimate at select pts\n');
   truePAtEvalPts = truePostEst(klEvalPts);
+
 else
+
+  klEvalPts = samplesEstEval;
   truePostEst = [];
   optKDEBandWidth = [];
   truePAtEvalPts = [];
+
 end
 
 % Save results

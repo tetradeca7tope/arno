@@ -2,7 +2,7 @@
 
 numDims = 8;
 lowestLogliklVal = -200;
-logLiklRange = 400;
+logLiklRange = 200;
 
 % Set up problem class
 paramSpaceBounds = repmat([0 1], numDims, 1);
@@ -55,7 +55,7 @@ alScale = logLiklRange/2;
 % Log on alBandwidth's that worked
 
 % Parameters for MCMC
-NUM_MCMC_SAMPLES = 6 * NUM_AL_ITERS;
+NUM_MCMC_SAMPLES = 8 * NUM_AL_ITERS;
 mcmcProposalStd = 0.05; % after the logit transform
 mcmcInitPt = 0.5*ones(numDims, 1);
 numMCMCResultsToBeStored = NUM_MCMC_SAMPLES / STORE_RESULTS_EVERY;
@@ -76,7 +76,7 @@ mcmc_errs = zeros(NUM_EXPERIMENTS, numMCMCResultsToBeStored);
 
 % For evaluation purposes
 numBurninSampleEstEval = 1000;
-numSamplesEstEval = 1e4;
+numSamplesEstEval = 1e5;
 evalMCMCProposalStd = mcmcProposalStd; % No reason to use anything else
 evalMCMCInitPt = logit( ...
   lrgExp.getNormCoords([0 0.762 0.1045 0.02233 0.951 0.6845 0 1.908])  )';
