@@ -1,4 +1,4 @@
-function [kl, logJointEst, probEst, l2] = evalRegMethodKLProgress( Xtr, Ytr, ...
+function [kl, logJointEst, probEst] = evalRegMethodKLProgress( Xtr, Ytr, ...
   gpFitParams, klEvalPts, truePAtEvalPts, evalMCMCParams, optKDEBandWidth)
 % This is essentially a utility function for VR, MBP, MCMC-REG and RAND.
 % It does the following in order
@@ -21,9 +21,19 @@ function [kl, logJointEst, probEst, l2] = evalRegMethodKLProgress( Xtr, Ytr, ...
 %          samples collected from logJointEst
 
   % Construct estimate of the log Joint probability 
-  logJointEst = regressionWrap(Xtr, Ytr, gpFitParams.noiseLevelGP, ...
-    gpFitParams.lowestLogliklVal, gpFitParams.logLiklRange, ...
-    gpFitParams.cvCostFunc);
+%   logJointEst = regressionWrap(Xtr, Ytr, gpFitParams.noiseLevelGP, ...
+%     gpFitParams.lowestLogliklVal, gpFitParams.logLiklRange, ...
+%     gpFitParams.cvCostFunc);
+  numPts = size(Xtr, 1);
+  numDims = size(Xtr, 2);
+  dummy_pt = zeros(1, numDims);
+  hyperParams.noise = gpFitParams.noiseLevelGP * ones(numPts, 1);
+  hyperParams.meanFunc = @(arg) gpFitParams.lowestLogliklVal;
+  hyperParams.sigmaSm = 0.3;
+  hyperParams.sigmaPr = gpFitParams.logLiklRange;
+  runtimeParams.retFunc = true;
+  [~, ~, ~, logJointEst] = GPRegression(Xtr, Ytr, dummy_pt, hyperParams, ...
+    runtimeParams);
 
   % Collect Samples via MCMC
   mcmcLogJointEst = @(t) logJointEst(logitinv(t));
@@ -36,11 +46,19 @@ function [kl, logJointEst, probEst, l2] = evalRegMethodKLProgress( Xtr, Ytr, ...
     logitMcmcSamples( (evalMCMCParams.numBurninSampleEstEval+1): end, :);
   mcmcSamples = logitinv( logitMcmcSamples );
 
-  % Do the KDE -- use the optimal Bandwidth
-  [~, probEst] = kde01(mcmcSamples, optKDEBandWidth);
+  % Print out some diagnostics
+  fprintf('Mean of truth: %s\n', mat2str(mean(klEvalPts)));
+  fprintf('Mean of other: %s\n', mat2str(mean(mcmcSamples)));
 
-  % Finally obtain the KL
-  [kl, l2] = estimKLForLRG(klEvalPts, truePAtEvalPts, probEst);
+  % Now estimate the L2 divergence
+  kl = l2Divergence(klEvalPts, mcmcSamples);
+  probEst = [];
+
+%   % Do the KDE -- use the optimal Bandwidth
+%   [~, probEst] = kde01(mcmcSamples, optKDEBandWidth);
+% 
+%   % Finally obtain the KL
+%   [kl, l2] = estimKLForLRG(klEvalPts, truePAtEvalPts, probEst);
   
 end  
 

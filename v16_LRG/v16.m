@@ -15,7 +15,7 @@ loadConstants;
 
 % Obtain an estimate of the ground truth
 obtainGroundTruth = true;
-obtainGroundTruth = false;
+% obtainGroundTruth = false;
 if obtainGroundTruth
   tic,
   obtainGroundTruthKL;

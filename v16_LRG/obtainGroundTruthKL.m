@@ -14,6 +14,7 @@ totalNumSamplesEstEval = numBurninSampleEstEval + 2*numSamplesEstEval;
 [samplesEstEval, queriesEstEval, logPsEstEval] = CustomMCMC( ...
   totalNumSamplesEstEval, evalMCMCProposalStd, evalMCMCInitPt,evalMCMCLogJoint);
 % Remove burnin, and then shuffle
+samplesEstEval = logitinv(samplesEstEval);
 samplesEstEval = samplesEstEval( (numBurninSampleEstEval+1): end, :);
 samplesEstEval = samplesEstEval( randperm(2*numSamplesEstEval), :);
 

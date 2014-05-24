@@ -17,14 +17,14 @@ for ucResIter = 1:numResultsToBeStored
   Ytr = ucLogProbs(1:currNumUCPts);
 
   % Obtain the errors and estimtes
-  [currKL, ucLogJointEst, ucProbEst, currL2]= evalRegMethodKLProgress( ...
+  [currKL, ucLogJointEst, ucProbEst]= evalRegMethodKLProgress( ...
     Xtr, Ytr, ...
     gpFitParams, klEvalPts, truePAtEvalPts, evalMCMCParams, optKDEBandWidth);
 
   % record and report
   uc_errs(experimentIter, ucResIter) = currKL;
-  fprintf(' UC Iter: %d, #pts: %d, KL: %0.4f, L2: %0.4f\n', ucResIter, ...
-          currNumUCPts, currKL, currL2);
+  fprintf(' UC Iter: %d, #pts: %d, KL: %0.4f\n', ucResIter, ...
+          currNumUCPts, currKL);
 
 end
 

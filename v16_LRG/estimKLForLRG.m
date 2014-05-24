@@ -1,4 +1,4 @@
-function [kl, l2] = estimKLForLRG( klEvalPts, truePAtEvalPts, q)
+function [kl] = estimKLForLRG( klEvalPts, truePAtEvalPts, q)
 % klEvalPts are samples from p, truePAtEvalPts is p(X) at klEvalPts
 % q is a function handle for the pdf q. The function estimates KL(p,q).
 
@@ -10,7 +10,7 @@ function [kl, l2] = estimKLForLRG( klEvalPts, truePAtEvalPts, q)
   % Compute the KL
   logPs = log(truePAtEvalPts);
   logQs = log(qAtEvalPts);
-  klIdxs = (truePAtEvalPts > LOW_TOL) & (qAtEvalPts > LOW_TOL);
+  klIdxs = (truePAtEvalPts > LOW_TOL); % & (qAtEvalPts > LOW_TOL);
   kl = mean( logPs(klIdxs) - logQs(klIdxs) );
   if isnan(kl)
     fprintf('Warning: KL was nan\n');
@@ -18,7 +18,9 @@ function [kl, l2] = estimKLForLRG( klEvalPts, truePAtEvalPts, q)
   end
 
   % Compute the L2
-  l2 = mean( (truePAtEvalPts - qAtEvalPts).^2 ./ truePAtEvalPts );
+%   l2 = mean( (truePAtEvalPts - qAtEvalPts).^2 ./ truePAtEvalPts );
+
+%   kl = l2Divergence(
   
 end
 

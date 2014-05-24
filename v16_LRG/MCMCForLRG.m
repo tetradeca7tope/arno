@@ -15,7 +15,8 @@ for mcmcResIter = 1:numMCMCResultsToBeStored
 
   % Perform KDE and obtain the results
   [~, mcmcProbEst] = kde01(currMCMCSamples);
-  currKL = estimKLForLRG( klEvalPts, truePAtEvalPts, mcmcProbEst);
+%   currKL = estimKLForLRG( klEvalPts, truePAtEvalPts, mcmcProbEst);
+  currKL = l2Divergence(klEvalPts, currMCMCSamples);
 
   % record and report
   mcmc_errs(experimentIter, mcmcResIter) = currKL;  

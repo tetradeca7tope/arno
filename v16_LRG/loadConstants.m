@@ -12,7 +12,7 @@ evalLogJoint = @(arg) lrgExp.normCoordLogJointProbs(arg);
 DEBUG_MODE = false;
 % DEBUG_MODE = true;
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 2500;
+  NUM_AL_ITERS = 1000;
   NUM_EXPERIMENTS = 30;
   STORE_RESULTS_EVERY = NUM_AL_ITERS/10;
 else
@@ -33,8 +33,10 @@ gpFitParams.logLiklRange = logLiklRange;
 
 % Parameters for active learning
 numALCandidates = 2000;
-alInitPts = lrgExp.getNormCoords([0 0.762 0.1045 0.02233 0.951 0.6845 0 1.908]);
-alInitLogProbs = evalLogJoint(alInitPts);
+% alInitPts=lrgExp.getNormCoords([0 0.762 0.1045 0.02233 0.951 0.6845 0 1.908]);
+% alInitLogProbs = evalLogJoint(alInitPts);
+alInitPts = [];
+alInitLogProbs = [];
 fprintf('Initing with logp = %s at %s\n', ...
   mat2str(alInitLogProbs), mat2str(alInitPts) );
 
@@ -43,15 +45,19 @@ initLipschitzConstant = logLiklRange/ (sqrt(numDims) * 2);
 initLipschitzConstant = 500; %logLiklRange/ (sqrt(numDims) * 2);
 
 % Parameters for Uncertainty Reduction
+% the KL was stuck at ~ 3-5 here for all iterations.
 alBandwidth = 1.5 * NUM_AL_ITERS ^ (-1 /(1.3 + numDims));
+% So I am going to try reducing it to see if we can have more exploration
+% alBandwidth = 5 * NUM_AL_ITERS ^ (-1 /(1.3 + numDims));
 % the constant 2.5 works well in front
 alScale = logLiklRange/2;
+
+% Log on alBandwidth's that worked
 
 % Parameters for MCMC
 NUM_MCMC_SAMPLES = 6 * NUM_AL_ITERS;
 mcmcProposalStd = 0.05; % after the logit transform
-mcmcInitPt = logit( ...
-  lrgExp.getNormCoords([0 0.762 0.1045 0.02233 0.951 0.6845 0 1.908])  )';
+mcmcInitPt = 0.5*ones(numDims, 1);
 numMCMCResultsToBeStored = NUM_MCMC_SAMPLES / STORE_RESULTS_EVERY;
 
 
@@ -70,7 +76,7 @@ mcmc_errs = zeros(NUM_EXPERIMENTS, numMCMCResultsToBeStored);
 
 % For evaluation purposes
 numBurninSampleEstEval = 1000;
-numSamplesEstEval = 1e5;
+numSamplesEstEval = 1e4;
 evalMCMCProposalStd = mcmcProposalStd; % No reason to use anything else
 evalMCMCInitPt = logit( ...
   lrgExp.getNormCoords([0 0.762 0.1045 0.02233 0.951 0.6845 0 1.908])  )';
