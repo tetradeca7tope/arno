@@ -82,7 +82,8 @@ end
 function ests = kdeEstAtPts(pts, X, h)
   numPts = size(pts, 1);
   numData = size(X, 1);
-  ptsPerPartition = floor(1e6/numData);
+  maxNumPts = 1e8;
+  ptsPerPartition = min( numPts, ceil(maxNumPts/numData));
 
   % Now do the estimation
   cumNumPts = 0;
