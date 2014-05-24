@@ -29,8 +29,8 @@ function [kl, logJointEst, probEst] = evalRegMethodKLProgress( Xtr, Ytr, ...
   dummy_pt = zeros(1, numDims);
   hyperParams.noise = gpFitParams.noiseLevelGP * ones(numPts, 1);
   hyperParams.meanFunc = @(arg) gpFitParams.lowestLogliklVal;
-  hyperParams.sigmaSm = 0.3;
-  hyperParams.sigmaPr = gpFitParams.logLiklRange;
+  hyperParams.sigmaSm = 2.4 * numPts^(-1/3);
+  hyperParams.sigmaPr = gpFitParams.logLiklRange/2;
   runtimeParams.retFunc = true;
   [~, ~, ~, logJointEst] = GPRegression(Xtr, Ytr, dummy_pt, hyperParams, ...
     runtimeParams);
@@ -47,11 +47,16 @@ function [kl, logJointEst, probEst] = evalRegMethodKLProgress( Xtr, Ytr, ...
   mcmcSamples = logitinv( logitMcmcSamples );
 
   % Print out some diagnostics
-  fprintf('Mean of truth: %s\n', mat2str(mean(klEvalPts)));
-  fprintf('Mean of other: %s\n', mat2str(mean(mcmcSamples)));
+  m1 = mean(klEvalPts);
+  m2 = mean(mcmcSamples);
+  fprintf('   Mean of truth: %s\n', mat2str(m1));
+  fprintf('   Mean of other: %s\n', mat2str(m2));
+  fprintf('   ||m1 - m2||/sqrt(m1*m2) = %0.4f\n', ...
+    norm(m1 - m2) / sqrt( norm(m1) * norm(m2) ) );
 
   % Now estimate the L2 divergence
-  kl = l2Divergence(klEvalPts, mcmcSamples);
+  mmdBandWidth = 0.1;
+  kl = mmdGauss(klEvalPts, mcmcSamples, mmdBandWidth);
   probEst = [];
 
 %   % Do the KDE -- use the optimal Bandwidth

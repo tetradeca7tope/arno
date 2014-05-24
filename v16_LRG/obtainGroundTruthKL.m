@@ -26,13 +26,23 @@ numUniqueSamples = size( unique(klEvalPts(:, 1)), 1);
 fprintf('#unique-samples/#total-samples: %d/%d = %.3f', ...
   numUniqueSamples, numSamplesEstEval, numUniqueSamples/numSamplesEstEval);
 
-% Now do a KDE
-fprintf('Performing KDE\n');
-[~, truePostEst, optKDEBandWidth] = kde01(samplesEstDensity);
+% Don't need to do a KDE if you are just doing mmd
+DOING_MMD = true;
+DOING_MMD = false;
 
-% Evaluate the estimated density at the other half
-fprintf('Evaluating estimate at select pts\n');
-truePAtEvalPts = truePostEst(klEvalPts);
+if DOING_MMD
+  % Now do a KDE
+  fprintf('Performing KDE\n');
+  [~, truePostEst, optKDEBandWidth] = kde01(samplesEstDensity);
+
+  % Evaluate the estimated density at the other half
+  fprintf('Evaluating estimate at select pts\n');
+  truePAtEvalPts = truePostEst(klEvalPts);
+else
+  truePostEst = [];
+  optKDEBandWidth = [];
+  truePAtEvalPts = [];
+end
 
 % Save results
 save(gtFile, 'truePAtEvalPts', 'klEvalPts', 'optKDEBandWidth');

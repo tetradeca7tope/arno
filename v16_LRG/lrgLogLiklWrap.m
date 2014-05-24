@@ -13,10 +13,12 @@ function [logLiklVals] = lrgLogLiklWrap(evalAtPts, lowestLogLiklVal)
 % Q_nl        : Nonlinear Correction = 30.81
 
   % Prelims
+  [~, hostname] = system('hostname'); hostname = hostname(1:4);
   numPts = size(evalAtPts, 1);
   numDims = size(evalAtPts, 2); % This should be 9 ?
-  fortOutFile = sprintf('liklOut_%s_%d.txt', datestr(now, 'HHMMSS'), ...
-    randi(9999999) );
+  fortOutFile = sprintf('lOut_%s_%s_%d.txt', hostname, ...
+    datestr(now, 'HHMMSS'), randi(9999999) );
+  binName = sprintf('bin%s', hostname);
   outFile = sprintf('sim/%s', fortOutFile);
 
   logLiklVals = zeros(numPts, 1);
@@ -26,7 +28,7 @@ function [logLiklVals] = lrgLogLiklWrap(evalAtPts, lowestLogLiklVal)
 
     % First create the command
     currEvalPt = evalAtPts(iter, :);
-    commandStr = 'cd sim && ./a.out ';
+    commandStr = sprintf('cd sim && ./%s ', binName);
     for k = 1:9
       commandStr = sprintf('%s %f ', commandStr, currEvalPt(k));
     end
@@ -43,7 +45,7 @@ function [logLiklVals] = lrgLogLiklWrap(evalAtPts, lowestLogLiklVal)
   end
 
   % Delete the file
-  delete(outFile);
+%   delete(outFile);
 
 end
 

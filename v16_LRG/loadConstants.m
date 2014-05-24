@@ -10,11 +10,11 @@ lrgExp = LRGExperiment();
 evalLogJoint = @(arg) lrgExp.normCoordLogJointProbs(arg);
 
 DEBUG_MODE = false;
-% DEBUG_MODE = true;
+DEBUG_MODE = true;
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 1000;
+  NUM_AL_ITERS = 2100;
   NUM_EXPERIMENTS = 30;
-  STORE_RESULTS_EVERY = NUM_AL_ITERS/10;
+  STORE_RESULTS_EVERY = NUM_AL_ITERS/7;
 else
   NUM_AL_ITERS = 6;
   NUM_EXPERIMENTS = 2; 
