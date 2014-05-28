@@ -68,7 +68,7 @@ if DOING_LOGIT
   mcmcInitPt = zeros(numDims, 1);
   mcmcLogJoint = @(t) evalLogJoint(logitinv(t));
 else
-  mcmcProposalStd = 0.003;
+  mcmcProposalStd = 0.002;
   mcmcInitPt = 0.5*ones(numDims, 1);
   mcmcLogJoint = @(t) evalLogJoint(t);
 end
@@ -103,6 +103,7 @@ evalMCMCParams.evalMCMCProposalStd = evalMCMCProposalStd;
 evalMCMCParams.evalMCMCInitPt = evalMCMCInitPt;
 evalMCMCParams.numBurninSampleEstEval = numBurninSampleEstEval;
 evalMCMCParams.numSamplesEstEval = numSamplesEstEval;
+evalMCMCParams.doingLogit = DOING_LOGIT;
 % Use another file to store all the ground truth details - just in case
 allGtFile = sprintf('allGroundTruth_%d.mat', numSamplesEstEval);
 
