@@ -13,7 +13,11 @@ function [logLiklVals] = lrgLogLiklWrap(evalAtPts, lowestLogLiklVal)
 % Q_nl        : Nonlinear Correction = 30.81
 
   % Prelims
-  [~, hostname] = system('hostname'); hostname = hostname(1:4);
+  [~, hostname] = system('hostname');
+  if hostname(1) == '\n', hostname = hostname(2:5);
+  else, hostname = hostname(1:4);
+  end
+
   numPts = size(evalAtPts, 1);
   numDims = size(evalAtPts, 2); % This should be 9 ?
   fortOutFile = sprintf('lOut_%s_%s_%d.txt', hostname, ...
@@ -45,7 +49,7 @@ function [logLiklVals] = lrgLogLiklWrap(evalAtPts, lowestLogLiklVal)
   end
 
   % Delete the file
-%   delete(outFile);
+  delete(outFile);
 
 end
 

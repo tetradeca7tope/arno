@@ -14,7 +14,7 @@ DOING_MMD = true;
 
 % Perform MCMC to collect samples
 fprintf('Collecting %d Samples with bw: %0.4f\n', numSamplesEstEval, ...
-  evalMCMCInitPt);
+  evalMCMCProposalStd);
 
 if ~DOING_MMD
   totalNumSamplesEstEval = numBurninSampleEstEval + 2*numSamplesEstEval;
@@ -27,8 +27,11 @@ end
 [samplesEstEval, queriesEstEval, logPsEstEval] = CustomMCMC( ...
   totalNumSamplesEstEval, evalMCMCProposalStd, evalMCMCInitPt, ...
   evalMCMCLogJoint);
+max(max(samplesEstEval)), min(min(samplesEstEval)),
+if DOING_LOGIT
+  samplesEstEval = logitinv(samplesEstEval);
+end
 % Remove burnin, and then shuffle
-samplesEstEval = logitinv(samplesEstEval);
 samplesEstEval = samplesEstEval( (numBurninSampleEstEval+1): end, :);
   % print out some info
   numUniqueSamples = size( unique(samplesEstEval(:, 1)), 1);
@@ -57,11 +60,17 @@ else
   truePostEst = [];
   optKDEBandWidth = [];
   truePAtEvalPts = [];
+  samplesEstDensity = [];
 
 end
 
+% Finally for probRatioStatistic
+prsPts = rand(numALCandidates, numDims);
+prsLogProbs = evalLogJoint(prsPts);
+
 % Save results
-save(gtFile, 'truePAtEvalPts', 'klEvalPts', 'optKDEBandWidth');
+save(gtFile, 'truePAtEvalPts', 'klEvalPts', 'optKDEBandWidth', ...
+  'queriesEstEval', 'logPsEstEval', 'prsPts', 'prsLogProbs');
 save(allGtFile, 'truePAtEvalPts', 'klEvalPts', 'optKDEBandWidth',  ...
   'numBurninSampleEstEval', ...
   'numSamplesEstEval', 'totalNumSamplesEstEval', 'samplesEstEval', ...

@@ -1,20 +1,26 @@
 % Sets all parameters for the problem
 
+% First determine the tests you are going to perfrm
+DOING_MMD = true;
+DOING_LOGIT = false;
+
 numDims = 8;
-lowestLogliklVal = -200;
-logLiklRange = 200;
+lowestLogliklVal = -2000;
+logLiklRange = 2000;
 
 % Set up problem class
 paramSpaceBounds = repmat([0 1], numDims, 1);
-lrgExp = LRGExperiment();
+lrgExp = LRGExperiment(lowestLogliklVal);
 evalLogJoint = @(arg) lrgExp.normCoordLogJointProbs(arg);
+MLEPoint = lrgExp.getNormCoords([0 0.762 0.1045 0.02233 0.951 0.6845 0 1.908]);
+MLELogP = evalLogJoint(MLEPoint);
 
 DEBUG_MODE = false;
-DEBUG_MODE = true;
+% DEBUG_MODE = true;
 if ~DEBUG_MODE
-  NUM_AL_ITERS = 2100;
+  NUM_AL_ITERS = 2500;
   NUM_EXPERIMENTS = 30;
-  STORE_RESULTS_EVERY = NUM_AL_ITERS/7;
+  STORE_RESULTS_EVERY = NUM_AL_ITERS/10;
 else
   NUM_AL_ITERS = 6;
   NUM_EXPERIMENTS = 2; 
@@ -37,8 +43,8 @@ numALCandidates = 2000;
 % alInitLogProbs = evalLogJoint(alInitPts);
 alInitPts = [];
 alInitLogProbs = [];
-fprintf('Initing with logp = %s at %s\n', ...
-  mat2str(alInitLogProbs), mat2str(alInitPts) );
+fprintf('Initing with logp = %s at %s MLE-LOGP = %0.5f\n', ...
+  mat2str(alInitLogProbs), mat2str(alInitPts), MLELogP );
 
 % Constants for MaxBandPoint
 initLipschitzConstant = logLiklRange/ (sqrt(numDims) * 2);
@@ -46,7 +52,7 @@ initLipschitzConstant = 500; %logLiklRange/ (sqrt(numDims) * 2);
 
 % Parameters for Uncertainty Reduction
 % the KL was stuck at ~ 3-5 here for all iterations.
-alBandwidth = 1.5 * NUM_AL_ITERS ^ (-1 /(1.3 + numDims));
+alBandwidth = 0.5 * NUM_AL_ITERS ^ (-1 /(1.3 + numDims));
 % So I am going to try reducing it to see if we can have more exploration
 % alBandwidth = 5 * NUM_AL_ITERS ^ (-1 /(1.3 + numDims));
 % the constant 2.5 works well in front
@@ -55,11 +61,17 @@ alScale = logLiklRange/2;
 % Log on alBandwidth's that worked
 
 % Parameters for MCMC
-NUM_MCMC_SAMPLES = 8 * NUM_AL_ITERS;
-mcmcProposalStd = 0.05; % after the logit transform
-mcmcInitPt = 0.5*ones(numDims, 1);
+NUM_MCMC_SAMPLES = 4 * NUM_AL_ITERS;
 numMCMCResultsToBeStored = NUM_MCMC_SAMPLES / STORE_RESULTS_EVERY;
-
+if DOING_LOGIT
+  mcmcProposalStd = 2; % after the logit transform
+  mcmcInitPt = zeros(numDims, 1);
+  mcmcLogJoint = @(t) evalLogJoint(logitinv(t));
+else
+  mcmcProposalStd = 0.003;
+  mcmcInitPt = 0.5*ones(numDims, 1);
+  mcmcLogJoint = @(t) evalLogJoint(t);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Other Ancillary Variables
@@ -75,14 +87,17 @@ rand_errs = zeros(NUM_EXPERIMENTS, numResultsToBeStored);
 mcmc_errs = zeros(NUM_EXPERIMENTS, numMCMCResultsToBeStored);
 
 % For evaluation purposes
-numBurninSampleEstEval = 1000;
 numSamplesEstEval = 1e5;
-evalMCMCProposalStd = mcmcProposalStd; % No reason to use anything else
-evalMCMCInitPt = logit( ...
-  lrgExp.getNormCoords([0 0.762 0.1045 0.02233 0.951 0.6845 0 1.908])  )';
-evalMCMCLogJoint = @(t) evalLogJoint(logitinv(t));
-gtFile = sprintf('groundTruthKL_%d_%.3f.mat', numSamplesEstEval, ...
-                 evalMCMCProposalStd);
+numBurninSampleEstEval = numSamplesEstEval/10;
+evalMCMCProposalStd = mcmcProposalStd;
+evalMCMCLogJoint = mcmcLogJoint;
+if DOING_LOGIT
+  evalMCMCInitPt = logit(MLEPoint )';
+else
+  evalMCMCInitPt = MLEPoint';
+end
+gtFile = sprintf('groundTruth_logit%d_%d_%.3f.mat', DOING_LOGIT, ...
+  numSamplesEstEval, evalMCMCProposalStd);
 % Create this structure for convenience
 evalMCMCParams.evalMCMCProposalStd = evalMCMCProposalStd;
 evalMCMCParams.evalMCMCInitPt = evalMCMCInitPt;

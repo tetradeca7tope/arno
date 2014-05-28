@@ -1,10 +1,15 @@
 % Performs MCMC for SDSS
 
-mcmcEvalLogJoint = @(t) evalLogJoint(logitinv(t));
 [logitMcmcSamples, logitMcmcQueries, mcmcLogProbs] = CustomMCMC( ...
-  NUM_MCMC_SAMPLES, mcmcProposalStd, mcmcInitPt, mcmcEvalLogJoint);
-mcmcSamples = logitinv(logitMcmcSamples);
-mcmcQueries = logitinv(logitMcmcQueries);
+  NUM_MCMC_SAMPLES, mcmcProposalStd, mcmcInitPt, mcmcLogJoint);
+max(max(logitMcmcSamples)), min(min(logitMcmcSamples)),
+if DOING_LOGIT
+  mcmcSamples = logitinv(logitMcmcSamples);
+  mcmcQueries = logitinv(logitMcmcQueries);
+else
+  mcmcSamples = logitMcmcSamples;
+  mcmcQueries = logitMcmcQueries;
+end
 
 % Now perform MCMC
 for mcmcResIter = 1:numMCMCResultsToBeStored
@@ -16,12 +21,16 @@ for mcmcResIter = 1:numMCMCResultsToBeStored
   % Perform KDE and obtain the results
   [~, mcmcProbEst] = kde01(currMCMCSamples);
 %   currKL = estimKLForLRG( klEvalPts, truePAtEvalPts, mcmcProbEst);
-  currKL = l2Divergence(klEvalPts, currMCMCSamples);
+  mmdBandWidth = 0.5;
+  currKL = mmdGauss(klEvalPts, currMCMCSamples, mmdBandWidth);
+  mcmcLogJointEst = @(t) mcmcProbEst(t);
+  prs = probRatioStatistic(prsPts, prsLogProbs, mcmcLogJointEst, MLEPoint, ...
+        MLELogP);
 
   % record and report
   mcmc_errs(experimentIter, mcmcResIter) = currKL;  
-  fprintf(' MCMC iter: %d, #pts: %d, KL: %.4f\n', mcmcResIter, ...
-    currNumMcmcPts, currKL);
+  fprintf(' MCMC iter: %d, #pts: %d, KL: %.4f, prs = %.4f\n', mcmcResIter, ...
+    currNumMcmcPts, currKL, prs);
   
 end
 
@@ -40,11 +49,13 @@ for mcmcRegResIter = 1:numResultsToBeStored
   % obtain errors and estimates
   [currKL, mrLogJointEst, mrProbEst] = evalRegMethodKLProgress( Xtr, Ytr, ...
     gpFitParams, klEvalPts, truePAtEvalPts, evalMCMCParams, optKDEBandWidth);
+  prs = probRatioStatistic(prsPts, prsLogProbs, mrLogJointEst, MLEPoint, ...
+        MLELogP);
 
   % record and report
   mcmcReg_errs(experimentIter, mcmcRegResIter) = currKL;
-  fprintf(' MR Iter: %d, #pts: %d, KL: %.4f\n', mcmcRegResIter, ...
-    currNumMRPts, currKL);  
+  fprintf(' MR Iter: %d, #pts: %d, KL: %.4f, prs = %.4f\n', mcmcRegResIter, ...
+    currNumMRPts, currKL, prs);  
 
 end
 

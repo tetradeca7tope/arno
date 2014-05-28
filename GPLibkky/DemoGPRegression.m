@@ -4,7 +4,7 @@ close all;
 
 % Generate data
 f = @(X)  X.^2 + X.*sin(4*X);
-% m = 11000;
+m = 10;
 X = linspace(0,1,m)'; y = f(X) + 0*randn(m,1);
 % X = [-4 -3 -1 0 1.5]'; X = (X + 4)/5.5; y = [-2 0 1 2 -1]'; 
 

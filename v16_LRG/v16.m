@@ -10,6 +10,8 @@ addpath ../MCMCLibkky/
 addpath ../ABCLibkky/
 addpath ../helper/
 
+warning off;
+
 % Load all constants
 loadConstants;
 

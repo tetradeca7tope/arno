@@ -8,7 +8,7 @@ NUM_MCMC_RES = 4 * NUM_RES;
 PTS_PER_RES = 160;
 
 % Load data
-load snls_1600_highbw;
+load snls_1600_diffh;
 uc2_errs = uc_errs;
 load snls_1600_all_2;
 
@@ -32,6 +32,7 @@ mean_mcmcReg_err = mean(mcmcReg_errs);
 mean_rand_err = mean(rand_errs);
 mean_mcmc_err = mean(mcmc_errs);
 mean_abc_err = mean(abc_errs);
+stdErrNormalizer = 0.5*sqrt(q);
 std_uc_err = std(uc_errs);
 std_uc2_err = std(uc2_errs);
 std_mcmcReg_err = std(mcmcReg_errs);
@@ -45,8 +46,8 @@ loglog(PTS_PER_RES * (1:NUM_MCMC_RES), mean_abc_err, 'y->');
 loglog(PTS_PER_RES * (1:NUM_RES), mean_mcmcReg_err, 'r-x');
 loglog(PTS_PER_RES * (1:NUM_RES), mean_rand_err, 'g-d');
 loglog(PTS_PER_RES * (1:NUM_RES), mean_uc_err, 'b-o');
-% loglog(PTS_PER_RES * (1:NUM_RES), mean_uc2_err, 'k-o');
-legend('MCMC-DE', 'ABC', 'MCMC-R', 'RAND', 'VR');
+loglog(PTS_PER_RES * (1:NUM_RES), mean_uc2_err, 'k-o');
+legend('MCMC-DE', 'ABC', 'MCMC-R', 'RAND', 'VR(h=0.1)', 'VR(h=0.2)');
 
 % Plot errorbars
 errorbar(PTS_PER_RES*(1:NUM_MCMC_RES),mean_mcmc_err,std_mcmc_err,'Color','m');
@@ -54,7 +55,7 @@ errorbar(PTS_PER_RES*(1:NUM_MCMC_RES),mean_abc_err,std_abc_err,'Color','y');
 errorbar(PTS_PER_RES*(1:NUM_RES),mean_mcmcReg_err,std_mcmcReg_err,'Color','r');
 errorbar(PTS_PER_RES*(1:NUM_RES),mean_rand_err,std_rand_err,'Color','g');
 errorbar(PTS_PER_RES*(1:NUM_RES),mean_uc_err,std_uc_err,'Color','b');
-% errorbar(PTS_PER_RES*(1:NUM_RES),mean_uc2_err,std_uc2_err,'Color','k');
+errorbar(PTS_PER_RES*(1:NUM_RES),mean_uc2_err,std_uc2_err,'Color','k');
 axis([0 (NUM_MCMC_RES*PTS_PER_RES + 100) 0.05 1000]);
 xlabel('# Queries');
 ylabel('KL Divergence');

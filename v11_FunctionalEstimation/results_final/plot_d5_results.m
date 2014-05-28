@@ -8,6 +8,9 @@ NUM_RESULTS = 10;
 NUM_MCMC_RESULTS = 10*NUM_RESULTS;
 PTS_PER_RES = 50;
 
+% set(0,'defaultAxesFontName', 'Dejavu Sans')
+% set(0,'defaultTextFontName', 'Dejavu Sans')
+
 % Create place holders
 all_mbp_errs.f1 = zeros(0, NUM_RESULTS);
 all_mbp_errs.f2 = zeros(0, NUM_RESULTS);
@@ -119,17 +122,24 @@ for i = 1:numel(functionals)
   loglog(PTS_PER_RES*(1:10), mean_mcmc_reg_err, 'r-x');
   loglog(PTS_PER_RES*(1:10), mean_rand_err, 'g-d');
   loglog(PTS_PER_RES*(1:10), mean_uc_err, 'b-o');
-  loglog(PTS_PER_RES*(1:10), mean_mbp_err, 'c-d');
-  legend('MCMC-DE', 'MCMC-R', 'RAND', 'VR', 'MBP');
+%   loglog(PTS_PER_RES*(1:10), mean_mbp_err, 'c-d');
+%   legend('MCMC-DE', 'MCMC-R', 'RAND', 'VR', 'MBP');
+%   legend('MCMC-DE', 'MCMC-R', 'RAND', 'VR');
 
   errorbar(PTS_PER_RES*(1:100), mean_mcmc_err, std_mcmc_err, 'Color', 'm');
   errorbar(PTS_PER_RES*(1:10), mean_mcmc_reg_err, std_mcmc_reg_err, 'Color', 'r');
   errorbar(PTS_PER_RES*(1:10), mean_rand_err, std_rand_err, 'Color', 'g' );
   errorbar(PTS_PER_RES*(1:10), mean_uc_err, std_uc_err, 'Color', 'b' );
-  errorbar(PTS_PER_RES*(1:10), mean_mbp_err, std_mbp_err, 'Color', 'c' );
+%   errorbar(PTS_PER_RES*(1:10), mean_mbp_err, std_mbp_err, 'Color', 'c' );
 
   axis([0 PTS_PER_RES*100 0.005 1.1]);
-  xlabel('# Queries');
-  ylabel('Relative Error');
+%   xlabel('Number of Queries', 'FontSize', 20);
+%   ylabel('Relative Error', 'FontSize', 20);
+  set(findall(gca, '-property', 'FontSize'), 'FontSize', 20, ...
+    'fontWeight', 'bold');
+%   xlabel('Number of Queries');
+%   ylabel('Relative Error');
+
+
 
 end

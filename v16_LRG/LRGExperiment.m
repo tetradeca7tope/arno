@@ -9,7 +9,7 @@ classdef LRGExperiment < handle
                           0.65  0.75; ... A_s: 0.6845
                           -0.1  0.1 ; ... alpha: 0
                           0     3.0 ];  % b: 1.908
-    lowestLogLiklVal = -200; % The highest is -9 so this is good enough.
+    lowestLogLiklVal; % The highest is -9 so this is good enough.
     % Set default values for A_s, alpha and Q_nl
     DFLT_QNL = 30.81;
   end
@@ -17,7 +17,8 @@ classdef LRGExperiment < handle
   methods
 
     % Constructor
-    function obj = GCExperiment()
+    function obj = LRGExperiment(lowestLogLiklVal)
+      obj.lowestLogLiklVal = lowestLogLiklVal;
     end
 
     function normCoords = getNormCoords(obj, trueCoords)

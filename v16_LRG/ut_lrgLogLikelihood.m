@@ -21,7 +21,7 @@ normEvalPts = [normEvalPts; rand(10, 8)];
 lrg.getTrueCoords(normEvalPts),
 lrg.normCoordLogJointProbs(normEvalPts),
 
-normEvalPts = [rand(10000, 8)];
+normEvalPts = [rand(1000, 8)];
 tic,
 ljps = lrg.normCoordLogJointProbs(normEvalPts);
 toc,

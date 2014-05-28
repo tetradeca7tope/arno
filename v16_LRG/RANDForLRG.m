@@ -13,11 +13,13 @@ for randIter = 1:numResultsToBeStored
   % Obtain errors and estimates
   [currKL, randLogJointEst, randProbEst] = evalRegMethodKLProgress(Xtr, Ytr, ...
     gpFitParams, klEvalPts, truePAtEvalPts, evalMCMCParams, optKDEBandWidth);
+  prs = probRatioStatistic(prsPts, prsLogProbs, randLogJointEst, MLEPoint, ...
+        MLELogP);
 
   % record and report
   rand_errs(experimentIter, randIter) = currKL;
-  fprintf(' Rand Iter: %d, #pts: %d, KL: %.4f\n', randIter, currNumRandPts, ...
-    currKL);
+  fprintf(' Rand Iter: %d, #pts: %d, KL: %.4f, prs: %.4f\n', randIter, ...
+    currNumRandPts, currKL, prs);
 
 end
 

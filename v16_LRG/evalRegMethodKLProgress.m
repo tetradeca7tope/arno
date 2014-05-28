@@ -55,7 +55,7 @@ function [kl, logJointEst, probEst] = evalRegMethodKLProgress( Xtr, Ytr, ...
     norm(m1 - m2) / sqrt( norm(m1) * norm(m2) ) );
 
   % Now estimate the L2 divergence
-  mmdBandWidth = 0.1;
+  mmdBandWidth = 0.5;
   kl = mmdGauss(klEvalPts, mcmcSamples, mmdBandWidth);
   probEst = [];
 

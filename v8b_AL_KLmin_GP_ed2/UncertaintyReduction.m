@@ -100,7 +100,8 @@ for uc_iter = 1 : NUM_AL_ITERS
   % =============================
   PLOT_OK_LOCAL = false;
   if PLOT_OK_LOCAL
-    figure(fig_post);
+%     figure(fig_post);
+    figure;
     plot(th, uc_est_post, 'r--'); hold on,
     plot(th, true_post, 'g');
     plot(uc_candidates, uncert * max(true_post) / max(uncert), 'ko');
