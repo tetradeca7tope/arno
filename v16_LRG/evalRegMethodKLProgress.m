@@ -21,30 +21,36 @@ function [kl, logJointEst, probEst] = evalRegMethodKLProgress( Xtr, Ytr, ...
 %          samples collected from logJointEst
 
   % Construct estimate of the log Joint probability 
-%   logJointEst = regressionWrap(Xtr, Ytr, gpFitParams.noiseLevelGP, ...
-%     gpFitParams.lowestLogliklVal, gpFitParams.logLiklRange, ...
-%     gpFitParams.cvCostFunc);
-  numPts = size(Xtr, 1);
-  numDims = size(Xtr, 2);
-  dummy_pt = zeros(1, numDims);
-  hyperParams.noise = gpFitParams.noiseLevelGP * ones(numPts, 1);
-  hyperParams.meanFunc = @(arg) gpFitParams.lowestLogliklVal;
-  hyperParams.sigmaSm = 2.4 * numPts^(-1/3);
-  hyperParams.sigmaPr = gpFitParams.logLiklRange/2;
-  runtimeParams.retFunc = true;
-  [~, ~, ~, logJointEst] = GPRegression(Xtr, Ytr, dummy_pt, hyperParams, ...
-    runtimeParams);
+  logJointEst = regressionWrap(Xtr, Ytr, gpFitParams.noiseLevelGP, ...
+    gpFitParams.lowestLogliklVal, gpFitParams.logLiklRange, ...
+    gpFitParams.cvCostFunc);
+%   numPts = size(Xtr, 1);
+%   numDims = size(Xtr, 2);
+%   dummy_pt = zeros(1, numDims);
+%   hyperParams.noise = gpFitParams.noiseLevelGP * ones(numPts, 1);
+%   hyperParams.meanFunc = @(arg) gpFitParams.lowestLogliklVal;
+%   hyperParams.sigmaSm = 2.4 * numPts^(-1/3);
+%   hyperParams.sigmaPr = gpFitParams.logLiklRange/2;
+%   runtimeParams.retFunc = true;
+%   [~, ~, ~, logJointEst] = GPRegression(Xtr, Ytr, dummy_pt, hyperParams, ...
+%     runtimeParams);
 
   % Collect Samples via MCMC
-  mcmcLogJointEst = @(t) logJointEst(logitinv(t));
   totalNumSamples = evalMCMCParams.numBurninSampleEstEval + ...
                     evalMCMCParams.numSamplesEstEval;
-  [logitMcmcSamples] = CustomMCMC( totalNumSamples, ...
-    evalMCMCParams.evalMCMCProposalStd, evalMCMCParams.evalMCMCInitPt, ...
-    mcmcLogJointEst);
-  logitMcmcSamples = ...
-    logitMcmcSamples( (evalMCMCParams.numBurninSampleEstEval+1): end, :);
-  mcmcSamples = logitinv( logitMcmcSamples );
+  if evalMCMCParams.doingLogit
+    mcmcLogJointEst = @(t) logJointEst(logitinv(t));
+    [logitMcmcSamples] = CustomMCMC( totalNumSamples, ...
+      evalMCMCParams.evalMCMCProposalStd, evalMCMCParams.evalMCMCInitPt, ...
+      mcmcLogJointEst);
+    logitMcmcSamples = ...
+      logitMcmcSamples( (evalMCMCParams.numBurninSampleEstEval+1): end, :);
+    mcmcSamples = logitinv( logitMcmcSamples );
+  else
+    [mcmcSamples] = CustomMCMC(totalNumSamples, ...
+      evalMCMCParams.evalMCMCProposalStd, evalMCMCParams.evalMCMCInitPt, ...
+      logJointEst);
+  end
 
   % Print out some diagnostics
   m1 = mean(klEvalPts);
