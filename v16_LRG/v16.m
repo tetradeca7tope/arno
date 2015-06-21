@@ -15,30 +15,17 @@ warning off;
 % Load all constants
 loadConstants;
 
-% Obtain an estimate of the ground truth
-obtainGroundTruth = true;
-% obtainGroundTruth = false;
-if obtainGroundTruth
-  tic,
-  obtainGroundTruthKL;
-  toc,
-else 
-  load(gtFile);
-end
-
-% For saving results
-
+% Don't store any results
+% numResultsToBeStored = 0;
+% numMCMCResultsToBeStored = 0;
 
 for experimentIter = 1:NUM_EXPERIMENTS
 
   fprintf('\nExperiment #%d\n', experimentIter);
-  fprintf('Evaluating with %d pts, %.4f bw\n', numSamplesEstEval, ...
-    evalMCMCProposalStd)
 
   fprintf('Uncertainty Reduction\n');
   UncertaintyReductionForLRG;
 
-  % Before running MBP reduce numALCandidates to 1000.
 %   fprintf('Max Band Point\n');
 %   MaxBandPointForLRG;
 
@@ -50,5 +37,17 @@ for experimentIter = 1:NUM_EXPERIMENTS
 
   fprintf('\n');
 
+  save( saveFileName, 'uc_errs', 'mbp_errs', 'rand_errs', 'mcmc_errs', ...
+    'mcmcReg_errs');
+  savePtsFileName = sprintf('%s_%d.mat', savePtsFilePrefix, experimentIter);
+  save( savePtsFileName, 'ucPts', 'ucLogProbs', 'mcmcQueries', ...
+  'mcmcLogProbs', 'mrPts', 'mrLogProbs', 'randPts', 'randLogProbs', ...
+  'mcmcSamples');
 end
 
+
+gtSaveFileName = sprintf('gt10_%s.mat', timestamp);
+save(gtSaveFileName, 'ucPts', 'ucLogProbs', 'mcmcQueries', ...
+  'mcmcLogProbs', 'mrPts', 'mrLogProbs', 'randPts', 'randLogProbs', ...
+  'mcmcSamples');
+system('beep');

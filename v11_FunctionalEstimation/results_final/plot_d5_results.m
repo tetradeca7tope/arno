@@ -9,7 +9,8 @@ NUM_MCMC_RESULTS = 10*NUM_RESULTS;
 PTS_PER_RES = 50;
 
 % set(0,'defaultAxesFontName', 'Dejavu Sans')
-% set(0,'defaultTextFontName', 'Dejavu Sans')
+set(0,'defaultTextFontName', 'Dejavu Sans')
+lw = 3;
 
 % Create place holders
 all_mbp_errs.f1 = zeros(0, NUM_RESULTS);
@@ -34,6 +35,7 @@ all_mcmc_errs.f3 = zeros(0, NUM_MCMC_RESULTS);
 all_mcmc_errs.f4 = zeros(0, NUM_MCMC_RESULTS);
 
 total_num_experiments = 0;
+numPtsToInclude = 10;
 
 for i = 1:numel(filenames)
 
@@ -43,25 +45,25 @@ for i = 1:numel(filenames)
 
   % Now save the errs
   % MBP
-  all_mbp_errs.f1 = [all_mbp_errs.f1; mbp_errs.f1(1:q, :)];
-  all_mbp_errs.f2 = [all_mbp_errs.f2; mbp_errs.f2(1:q, :)];
-  all_mbp_errs.f3 = [all_mbp_errs.f3; mbp_errs.f3(1:q, :)];
-  all_mbp_errs.f4 = [all_mbp_errs.f4; mbp_errs.f4(1:q, :)];
+  all_mbp_errs.f1 = [all_mbp_errs.f1; mbp_errs.f1(1:q, 1:numPtsToInclude)];
+  all_mbp_errs.f2 = [all_mbp_errs.f2; mbp_errs.f2(1:q, 1:numPtsToInclude)];
+  all_mbp_errs.f3 = [all_mbp_errs.f3; mbp_errs.f3(1:q, 1:numPtsToInclude)];
+  all_mbp_errs.f4 = [all_mbp_errs.f4; mbp_errs.f4(1:q, 1:numPtsToInclude)];
   % UC 
-  all_uc_errs.f1 = [all_uc_errs.f1; uc_errs.f1(1:q, :)];
-  all_uc_errs.f2 = [all_uc_errs.f2; uc_errs.f2(1:q, :)];
-  all_uc_errs.f3 = [all_uc_errs.f3; uc_errs.f3(1:q, :)];
-  all_uc_errs.f4 = [all_uc_errs.f4; uc_errs.f4(1:q, :)];
+  all_uc_errs.f1 = [all_uc_errs.f1; uc_errs.f1(1:q, 1:numPtsToInclude )];
+  all_uc_errs.f2 = [all_uc_errs.f2; uc_errs.f2(1:q, 1:numPtsToInclude )];
+  all_uc_errs.f3 = [all_uc_errs.f3; uc_errs.f3(1:q, 1:numPtsToInclude )];
+  all_uc_errs.f4 = [all_uc_errs.f4; uc_errs.f4(1:q, 1:numPtsToInclude )];
   % MCMC-REG
-  all_mcmc_reg_errs.f1 = [all_mcmc_reg_errs.f1; mcmc_reg_errs.f1(1:q, :)];
-  all_mcmc_reg_errs.f2 = [all_mcmc_reg_errs.f2; mcmc_reg_errs.f2(1:q, :)];
-  all_mcmc_reg_errs.f3 = [all_mcmc_reg_errs.f3; mcmc_reg_errs.f3(1:q, :)];
-  all_mcmc_reg_errs.f4 = [all_mcmc_reg_errs.f4; mcmc_reg_errs.f4(1:q, :)];
+  all_mcmc_reg_errs.f1 = [all_mcmc_reg_errs.f1; mcmc_reg_errs.f1(1:q, 1:numPtsToInclude)];
+  all_mcmc_reg_errs.f2 = [all_mcmc_reg_errs.f2; mcmc_reg_errs.f2(1:q, 1:numPtsToInclude)];
+  all_mcmc_reg_errs.f3 = [all_mcmc_reg_errs.f3; mcmc_reg_errs.f3(1:q, 1:numPtsToInclude)];
+  all_mcmc_reg_errs.f4 = [all_mcmc_reg_errs.f4; mcmc_reg_errs.f4(1:q, 1:numPtsToInclude)];
   % MCMC
-  all_mcmc_errs.f1 = [all_mcmc_errs.f1; mcmc_errs.f1(1:q, :)];
-  all_mcmc_errs.f2 = [all_mcmc_errs.f2; mcmc_errs.f2(1:q, :)];
-  all_mcmc_errs.f3 = [all_mcmc_errs.f3; mcmc_errs.f3(1:q, :)];
-  all_mcmc_errs.f4 = [all_mcmc_errs.f4; mcmc_errs.f4(1:q, :)];
+  all_mcmc_errs.f1 = [all_mcmc_errs.f1; mcmc_errs.f1(1:q, 1:numPtsToInclude)];
+  all_mcmc_errs.f2 = [all_mcmc_errs.f2; mcmc_errs.f2(1:q, 1:numPtsToInclude)];
+  all_mcmc_errs.f3 = [all_mcmc_errs.f3; mcmc_errs.f3(1:q, 1:numPtsToInclude)];
+  all_mcmc_errs.f4 = [all_mcmc_errs.f4; mcmc_errs.f4(1:q, 1:numPtsToInclude)];
 
 end
 
@@ -69,10 +71,10 @@ end
 for i = 1:numel(rand_filenames)
   load(rand_filenames{i});
   q = sum( double(rand_errs.f1(:,1) > 0) ),
-  all_rand_errs.f1 = [all_rand_errs.f1; rand_errs.f1(1:q, :)];
-  all_rand_errs.f2 = [all_rand_errs.f2; rand_errs.f2(1:q, :)];
-  all_rand_errs.f3 = [all_rand_errs.f3; rand_errs.f3(1:q, :)];
-  all_rand_errs.f4 = [all_rand_errs.f4; rand_errs.f4(1:q, :)];
+  all_rand_errs.f1 = [all_rand_errs.f1; rand_errs.f1(1:q, 1:numPtsToInclude)];
+  all_rand_errs.f2 = [all_rand_errs.f2; rand_errs.f2(1:q, 1:numPtsToInclude)];
+  all_rand_errs.f3 = [all_rand_errs.f3; rand_errs.f3(1:q, 1:numPtsToInclude)];
+  all_rand_errs.f4 = [all_rand_errs.f4; rand_errs.f4(1:q, 1:numPtsToInclude)];
 end
 
 % Now lets plot
@@ -118,21 +120,21 @@ for i = 1:numel(functionals)
   std_rand_err = std(f_rand_err, 1)/ sqrt(30);
 
   figure;
-  loglog(PTS_PER_RES*(1:100)', mean_mcmc_err', 'm-s'); hold on,
-  loglog(PTS_PER_RES*(1:10), mean_mcmc_reg_err, 'r-x');
-  loglog(PTS_PER_RES*(1:10), mean_rand_err, 'g-d');
-  loglog(PTS_PER_RES*(1:10), mean_uc_err, 'b-o');
+  loglog(PTS_PER_RES*(1:10)', mean_mcmc_err', 'm-s', 'Linewidth', lw); hold on,
+  loglog(PTS_PER_RES*(1:10), mean_mcmc_reg_err, 'r-x', 'Linewidth', lw);
+  loglog(PTS_PER_RES*(1:10), mean_rand_err, 'g-d', 'Linewidth', lw);
+  loglog(PTS_PER_RES*(1:10), mean_uc_err, 'b-o', 'Linewidth', lw);
 %   loglog(PTS_PER_RES*(1:10), mean_mbp_err, 'c-d');
 %   legend('MCMC-DE', 'MCMC-R', 'RAND', 'VR', 'MBP');
-%   legend('MCMC-DE', 'MCMC-R', 'RAND', 'VR');
+  legend('MCMC-DE', 'MCMC-R', 'RAND', 'EV');
 
-  errorbar(PTS_PER_RES*(1:100), mean_mcmc_err, std_mcmc_err, 'Color', 'm');
-  errorbar(PTS_PER_RES*(1:10), mean_mcmc_reg_err, std_mcmc_reg_err, 'Color', 'r');
-  errorbar(PTS_PER_RES*(1:10), mean_rand_err, std_rand_err, 'Color', 'g' );
-  errorbar(PTS_PER_RES*(1:10), mean_uc_err, std_uc_err, 'Color', 'b' );
+  errorbar(PTS_PER_RES*(1:10), mean_mcmc_err, std_mcmc_err, 'Color', 'm', 'Linewidth', lw);
+  errorbar(PTS_PER_RES*(1:10), mean_mcmc_reg_err, std_mcmc_reg_err, 'Color', 'r', 'Linewidth', lw);
+  errorbar(PTS_PER_RES*(1:10), mean_rand_err, std_rand_err, 'Color', 'g', 'Linewidth', lw );
+  errorbar(PTS_PER_RES*(1:10), mean_uc_err, std_uc_err, 'Color', 'b', 'Linewidth', lw );
 %   errorbar(PTS_PER_RES*(1:10), mean_mbp_err, std_mbp_err, 'Color', 'c' );
 
-  axis([0 PTS_PER_RES*100 0.005 1.1]);
+  axis([0 550 0.005 1.1]);
 %   xlabel('Number of Queries', 'FontSize', 20);
 %   ylabel('Relative Error', 'FontSize', 20);
   set(findall(gca, '-property', 'FontSize'), 'FontSize', 20, ...

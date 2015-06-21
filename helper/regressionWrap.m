@@ -12,10 +12,10 @@ function logJointEst = regressionWrap(pts, vals, noise_level, ...
   num_dims = size(pts, 2);
   
   % Set up hyper params
-  cv_candidates.sigmaSmVals = logspace(-2, 2, 20)' * (1/num_pts)^(1/5);
-  cv_candidates.sigmaPrVals = logspace(-1, 1, 10)' * loglikl_range;
+  cv_candidates.sigmaSmVals = logspace(-1, 1, 6)' * (1/num_pts)^(1/10);
+  cv_candidates.sigmaPrVals = 4 * loglikl_range;
   hyper_params.noise = noise_level * ones(num_pts, 1);
-  hyper_params.meanFunc = @(arg) lowest_loglikl_val;
+  hyper_params.meanFunc = @(arg) log( mean(exp(vals))); % lowest_loglikl_val;
   hyper_params.costFunc = cv_cost_func;
 
   % Create a dummy point to obtain the hyper params

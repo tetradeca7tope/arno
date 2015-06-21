@@ -1,6 +1,8 @@
-PLOT_ERROR_BARS = 1;
+PLOT_ERROR_BARS = 0;
+set(0,'defaultAxesFontName', 'Dejavu Sans')
+close all;
 
-% load temp_res
+load results_Nc25 
 if ~exist('num_pts', 'var')
  num_pts = size(results_al, 2);
 end
@@ -10,7 +12,10 @@ bf = results_bf(1:q, 1:num_pts);
 mc = results_mcmc(1:q, 1:num_pts);
 ab = results_abc(1:q, 1:num_pts);
 uc = results_uc(1:q, 1:num_pts);
-md = results_mcmcd(1:q, 1:num_pts);
+
+% mcmc density estimation
+load mcmcd
+md = results_mcmcd(1:20, :);
 
 pkm = @(x, s) plot(mean(x,1), s); 
 plm = @(x, s) pkm(log(x), s); 
@@ -26,7 +31,7 @@ bfm = sort(bf); bfm = bfm(start_idx:end_idx, :);
 mcm = sort(mc); mcm = mcm(start_idx:end_idx, :); 
 abm = sort(ab); abm = abm(start_idx:end_idx, :);
 ucm = sort(uc); ucm = ucm(start_idx:end_idx, :);
-% mdm = sort(md); mdm = mdm(start_idx:end_idx, :);
+mdm = sort(md); mdm = mdm(start_idx:end_idx, :);
 
 figure; hold on,
 pkm(alm, 'b-o');
@@ -60,8 +65,41 @@ xlabel('Number of Queries');
 ylabel('log(KL(true-post || est-post))');
 legend('EDR', 'VR', 'MCMC-R', 'RAND');
 
+% Plot in log log scale
+alMean = mean(alm);
+bfMean = mean(bfm);
+ucMean = mean(ucm);
+mrMean = mean(mcm);
+mdMean = mean(mdm);
+% obtain stds
+alStd = std(alm)/sqrt(20);
+bfStd = std(bfm)/sqrt(20);
+ucStd = std(ucm)/sqrt(20);
+mrStd = std(mcm)/sqrt(20);
+mdStd = std(mdm)/sqrt(20);
+
+figure;
+loglog(1:1000, mdMean, 'm-s'); hold on,
+loglog(1:100, mrMean, 'r-x');
+loglog(1:100, bfMean, 'g-d');
+loglog(1:100, ucMean, 'b-o');
+loglog(1:100, alMean, 'c-d');
+legend('MCMC-DE', 'MCMC-R', 'RAND', 'VR', 'EDR');
+
+errorbar(1:1000, mdMean, mdStd, 'Color', 'm');
+errorbar(1:100, mrMean, mrStd, 'Color', 'r');
+errorbar(1:100, bfMean, bfStd, 'Color', 'g');
+errorbar(1:100, ucMean, ucStd, 'Color', 'b');
+errorbar(1:100, alMean, alStd, 'Color', 'c');
+
+axis([0 1001 0.02 50]);
+set(findall(gca, '-property', 'FontSize'), 'FontSize', 16, ...
+  'fontWeight', 'bold');
+xlabel('Number of Queries');
+ylabel('KL Divergence');
+
  
-if FALSE,
+if false
 fkl = figure;
 fkll = figure;
 

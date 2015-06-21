@@ -112,17 +112,19 @@ end
 % Use EER
 % ExpectedErrorReduction;
 % QBC;
-KL_progress = uc_kl_progress;
+% KL_progress = uc_kl_progress;
 
 % Use uncertainty reduction
-UncertaintyReduction_2D;
+% UncertaintyReduction_2D;
 
 % Use MCMC to obtain an estimate of the posterior
 % MCMCForPostEstimation_2D;
 
 % MCMC - Density estimation
-% MCMCKDE;
+MCMCKDE;
 
 % Obtain a baseline performance using a grid search.
 % bruteForceSearchForPostEstimation_2D;
+
+% MCMCKDE;
 

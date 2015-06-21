@@ -11,6 +11,8 @@ NUM_RESULTS = 10;
 NUM_MCMC_RESULTS = 10*NUM_RESULTS;
 PTS_PER_RES = 200;
 
+set(0,'defaultAxesFontName', 'Dejavu Sans')
+
 % Create place holders
 all_mbp_errs.f1 = zeros(0, NUM_RESULTS);
 all_mbp_errs.f2 = zeros(0, NUM_RESULTS);

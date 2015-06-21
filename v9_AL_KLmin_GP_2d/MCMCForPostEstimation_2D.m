@@ -21,7 +21,8 @@ evalLogJoint = @(evalPts) evalLogJointProbs(evalPts(:,1), evalPts(:,2), sumX);
 kl_after_each_sample = zeros(NUM_MCMC_SAMPLES, 1);
 num_valid_pts = zeros(NUM_MCMC_SAMPLES, 1);
 
-for mcmc_run_iter = 1: NUM_MCMC_RUNS
+% for mcmc_run_iter = 1: NUM_MCMC_RUNS
+for mcmc_run_iter = 1:0 % NUM_MCMC_RUNS
 
   fprintf('MCMC_RUN_ITER: %d\n', mcmc_run_iter);
   % As the initial point for MCMC pick the point with the highest probability

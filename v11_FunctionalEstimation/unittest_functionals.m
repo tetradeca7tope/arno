@@ -3,8 +3,8 @@
 % add required functions
 addpath ../helper
 
-N = 10000;
-dims = 2;
+N = 20000;
+dims = 15;
 
 p1 = 0.8;
 p2 = 1 - p1;

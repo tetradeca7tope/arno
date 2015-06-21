@@ -1,8 +1,8 @@
 % Use MCMC to generate samples and then perform KDE
 
 PROPOSAL_STD = 1/10;
-NUM_MCMC_QUERIES = NUM_AL_ITERS + NUM_INITIAL_PTS_PER_DIM^2;
-MCMCD_INIT_PT = [0.2, 0.25];
+NUM_MCMC_QUERIES = 1000 + NUM_INITIAL_PTS_PER_DIM^2;
+MCMCD_INIT_PT = [0.5, 0.5];
 
 evalLogJoint = @(evalPts) evalLogJointProbs(evalPts(:,1), evalPts(:,2), sumX);
 
@@ -13,7 +13,7 @@ mcmcd_kl_progress = zeros(NUM_MCMC_QUERIES, 1);
 
 for mcmcd_iter = 1:NUM_MCMC_QUERIES
 
-  fprintf('mcmc-query: %d, ', mcmcd_iter);
+%   fprintf('mcmc-query: %d, ', mcmcd_iter);
   [mcmc_pt, mcmc_log_joint] = Custom2DMCMC(PROPOSAL_STD, mcmc_pt, ...
     mcmc_log_joint, evalLogJoint);
   mcmcd_collected_samples = [mcmcd_collected_samples; mcmc_pt];
@@ -28,10 +28,12 @@ for mcmcd_iter = 1:NUM_MCMC_QUERIES
   [mcmcd_est_post] = mcmcd_kde(th);
   curr_kl = estimate_2D_KL(th, log(true_post), log(mcmcd_est_post));
   mcmcd_kl_progress(mcmcd_iter) = curr_kl; 
-  fprintf('mcmcd_iter: %d, pt: (%0.4f, %0.4f), KL: %.5f\n', ...
-    mcmcd_iter, mcmc_pt(1), mcmc_pt(2), curr_kl);
+  if mod(mcmcd_iter, 100) == 0
+    fprintf('mcmcd_iter: %d, pt: (%0.4f, %0.4f), KL: %.5f\n', ...
+      mcmcd_iter, mcmc_pt(1), mcmc_pt(2), curr_kl);
+  end
 
-  PLOT_OK_LOCAL = true;
+  PLOT_OK_LOCAL = false;% true;
   if PLOT_OK_LOCAL
     figure(fig_mcmc_samples);
     Est_post = reshape(mcmcd_est_post, RESOLUTION_PER_DIM, RESOLUTION_PER_DIM);
@@ -48,5 +50,6 @@ end
 mcmcd_kl_progress = mcmcd_kl_progress(NUM_INITIAL_PTS_PER_DIM^2 +1 : end);
 
 % Plot them out
-figure(fig_kl_progress);
-plot(log(mcmcd_kl_progress), 'm-*');
+% figure(fig_kl_progress);
+% plot(log(mcmcd_kl_progress), 'm-*');
+

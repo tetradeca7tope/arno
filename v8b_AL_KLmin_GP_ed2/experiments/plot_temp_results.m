@@ -1,6 +1,8 @@
 PLOT_ERROR_BARS = 1;
 
 % load temp_res
+% load modbeta1 
+q = 60;
 if ~exist('num_pts', 'var')
  num_pts = size(results_al, 2);
 end

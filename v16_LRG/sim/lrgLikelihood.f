@@ -20,7 +20,7 @@
         p(9) = 30.81          ! nonlinear correction Q_nl
       
         result = computeChisqf(9, p)
-        write(*,'(a10, f12.8)') 'chisq', result
+c         write(*,'(a10, f12.8)') 'chisq', result
       end
 
 
@@ -742,7 +742,7 @@ c ----------------------------- DRIVER -------------------------------
 
 c  cosmological parameters
 
-      write(6,*) 'Omega_0,f_baryon,h,T_cmb?'
+c       write(6,*) 'Omega_0,f_baryon,h,T_cmb?'
       read*,     omega0,f_baryon,hubble,Tcmb
       omhh = omega0*hubble*hubble
 
@@ -755,7 +755,7 @@ c  loop over k, call subroutine and functions to calc TFs
  
       open(10,file='trans.dat')
 
-      write(6,*) 'k_max (h Mpc^{-1}),#pts per decade (10,50)'
+c       write(6,*) 'k_max (h Mpc^{-1}),#pts per decade (10,50)'
       read*,kmax,numk
 
       if (kmax.le.0) kmax=10.
@@ -769,22 +769,22 @@ c  loop over k, call subroutine and functions to calc TFs
        k=10.**(i*(log10(kmax/kmin)/numk))*kmin
          call TFtransfer_function(k*hubble,omhh,f_baryon,
      &     tf_full,tf_baryon,tf_cdm)
-       write(10,50) k,tf_full,tf_baryon,tf_cdm,
-     &               TF_nowiggles(k*hubble,omhh,f_baryon,Tcmb),
-     &               TF_zerobaryon(k*hubble/omhh*(Tcmb/2.7)**2)
+c        write(10,50) k,tf_full,tf_baryon,tf_cdm,
+c      &               TF_nowiggles(k*hubble,omhh,f_baryon,Tcmb),
+c      &               TF_zerobaryon(k*hubble/omhh*(Tcmb/2.7)**2)
 
 
       end do
 
 c  example of how to use the scaling functions
 
-      write(6,*) 'Some useful approximate scalings:'
+c       write(6,*) 'Some useful approximate scalings:'
 
-      write(6,10) k_peak(omhh,f_baryon)/hubble
+c       write(6,10) k_peak(omhh,f_baryon)/hubble
 10    FORMAT(1X,' First peak location (h Mpc^{-1}):  ',E13.4)
-      write(6,20) sound_horizon_fit(omhh,f_baryon)*hubble
+c       write(6,20) sound_horizon_fit(omhh,f_baryon)*hubble
 20    FORMAT(1X,' Approx. sound horizon (h^{-1} Mpc):',E13.4)
-      write(6,30) alpha_gamma(omhh,f_baryon)
+c       write(6,30) alpha_gamma(omhh,f_baryon)
 30    FORMAT(1X,' alpha_gamma:                       ',E13.4)
 
 
@@ -847,7 +847,7 @@ c Are inputs reasonable?
       if (f_baryon.le.0) f_baryon=1.d-5
       if (Tcmb.le.0) Tcmb=2.728
         if (omhh.le.0.0) then
-         write(6,*) 'TFset_parameters(): Illegal input'  
+c          write(6,*) 'TFset_parameters(): Illegal input'  
 c          pause
       end if
 
@@ -941,7 +941,7 @@ c
 c  Reasonable k?
 
         if (k.le.0) then
-           write(6,*) 'TFtransfer_function(): Illegal k'
+c            write(6,*) 'TFtransfer_function(): Illegal k'
 c            pause
         end if 
 

@@ -13,49 +13,52 @@ end
 
 % Now perform MCMC
 for mcmcResIter = 1:numMCMCResultsToBeStored
+% for mcmcResIter = 1:0 %numMCMCResultsToBeStored
 
-  currNumMcmcPts = mcmcResIter * STORE_RESULTS_EVERY;
+  currNumMcmcPts = STORE_MCMC_RESULTS_AT(mcmcResIter);
   % Obtain the current set of points
   currMCMCSamples = mcmcSamples(1:currNumMcmcPts, :);
 
   % Perform KDE and obtain the results
   [~, mcmcProbEst] = kde01(currMCMCSamples);
-%   currKL = estimKLForLRG( klEvalPts, truePAtEvalPts, mcmcProbEst);
-  mmdBandWidth = 0.5;
-  currKL = mmdGauss(klEvalPts, currMCMCSamples, mmdBandWidth);
-  mcmcLogJointEst = @(t) mcmcProbEst(t);
-  prs = probRatioStatistic(prsPts, prsLogProbs, mcmcLogJointEst, MLEPoint, ...
-        MLELogP);
+  mcmcLogProbEst = @(t) mcmcProbEst(t);
+  estGTLogProbs = mcmcLogProbEst(gtPts);
+  gtProbs = exp(gtLogProbs);
+  estGTProbs = exp(estGTLogProbs);
+  k = estGTProbs(1)/gtProbs(1);
+  estGTProbs = estGTProbs / k;
+  currErr = 1/numGTPts * ( sum(gtProbs.^2) - ...
+                           (estGTProbs'*gtProbs)^2/sum(estGTProbs.^2) );
+  currErr = sqrt( mean ( (estGTProbs - gtProbs).^2 ) );
 
   % record and report
-  mcmc_errs(experimentIter, mcmcResIter) = currKL;  
-  fprintf(' MCMC iter: %d, #pts: %d, KL: %.4f, prs = %.4f\n', mcmcResIter, ...
-    currNumMcmcPts, currKL, prs);
+  mcmc_errs(experimentIter, mcmcResIter) = currErr;  
+  fprintf(' MCMC iter: %d, #pts: %d, err: %e\n', mcmcResIter, ...
+    currNumMcmcPts, currErr);
   
 end
-
 
 % Now perform MCMC REgression
 % ===========================
 fprintf('MCMC Regression\n==================================');
+mrPts = mcmcQueries(1:NUM_AL_ITERS, :);
+mrLogProbs = mcmcLogProbs(1:NUM_AL_ITERS, :);
 
 for mcmcRegResIter = 1:numResultsToBeStored
 
-  currNumMRPts = mcmcRegResIter * STORE_RESULTS_EVERY;
+  currNumMRPts = STORE_RESULTS_AT(mcmcRegResIter);
   % Obtain Regressors and Regressands
   Xtr = mcmcQueries(1:currNumMRPts, :);
   Ytr = mcmcLogProbs(1:currNumMRPts);
 
   % obtain errors and estimates
-  [currKL, mrLogJointEst, mrProbEst] = evalRegMethodKLProgress( Xtr, Ytr, ...
-    gpFitParams, klEvalPts, truePAtEvalPts, evalMCMCParams, optKDEBandWidth);
-  prs = probRatioStatistic(prsPts, prsLogProbs, mrLogJointEst, MLEPoint, ...
-        MLELogP);
+  [currErr, mrLogJointEst]= evalRegMethodProgress(Xtr, Ytr, ...
+    gtPts, gtLogProbs, gpFitParams);
 
   % record and report
-  mcmcReg_errs(experimentIter, mcmcRegResIter) = currKL;
-  fprintf(' MR Iter: %d, #pts: %d, KL: %.4f, prs = %.4f\n', mcmcRegResIter, ...
-    currNumMRPts, currKL, prs);  
+  mcmcReg_errs(experimentIter, mcmcRegResIter) = currErr;
+  fprintf(' MR Iter: %d, #pts: %d, err: %e\n', mcmcRegResIter, ...
+    currNumMRPts, currErr);
 
 end
 

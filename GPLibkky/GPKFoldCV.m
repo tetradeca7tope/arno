@@ -11,32 +11,38 @@ function [mu, K, sigmaSmOpt, sigmaPrOpt] = GPKFoldCV(X, y, Xtest, ...
     a1 = repmat(candidates.sigmaSmVals, n2, 1);
     a2 = repmat(candidates.sigmaPrVals, 1, n1)'; a2 = a2(:);
     cand_vals = [a1 a2];
+%     cand_vals,
   else
     cand_vals = candidates;
   end
 
-  % if the Cost function is not specified, the set it to be sum of squares
-  if ~isfield(hyperParams, 'costFunc')
-    hyperParams.costFunc = @(y1, y2) (y1 - y2).^2;
-  end
+  if size(cand_vals, 1) == 1
+    sigmaSmOpt = cand_vals(1);
+    sigmaPrOpt = cand_vals(2);
+  else
+    % if the Cost function is not specified, the set it to be sum of squares
+    if ~isfield(hyperParams, 'costFunc')
+      hyperParams.costFunc = @(y1, y2) (y1 - y2).^2;
+    end
 
-  if isempty(num_partitions)
-    num_partitions = min(size(X,1), 10);
-  end
-  % if fewer partitions than data fix that
-  num_partitions = min(num_partitions, size(X,1));
+    if isempty(num_partitions)
+      num_partitions = min(size(X,1), 10);
+    end
+    % if fewer partitions than data fix that
+    num_partitions = min(num_partitions, size(X,1));
 
-  % Peform K-fold cross Validation
-  num_cand_combinations = size(cand_vals);
-  best_likl = -inf;
-  for cand_iter = 1:num_cand_combinations
-    hyperParams.sigmaSm = cand_vals(cand_iter, 1);
-    hyperParams.sigmaPr = cand_vals(cand_iter, 2);
-    curr_likl = KFoldExperiment(X, y, num_partitions, hyperParams);
-    if curr_likl >= best_likl
-      best_likl = curr_likl;
-      sigmaSmOpt = cand_vals(cand_iter, 1);
-      sigmaPrOpt = cand_vals(cand_iter, 2);
+    % Peform K-fold cross Validation
+    num_cand_combinations = size(cand_vals);
+    best_likl = -inf;
+    for cand_iter = 1:num_cand_combinations
+      hyperParams.sigmaSm = cand_vals(cand_iter, 1);
+      hyperParams.sigmaPr = cand_vals(cand_iter, 2);
+      curr_likl = KFoldExperiment(X, y, num_partitions, hyperParams);
+      if curr_likl >= best_likl
+        best_likl = curr_likl;
+        sigmaSmOpt = cand_vals(cand_iter, 1);
+        sigmaPrOpt = cand_vals(cand_iter, 2);
+      end
     end
   end
 

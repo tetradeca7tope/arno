@@ -1,6 +1,6 @@
 % Script runs UC for SDSS
 
-% Initialization
+% %Initialization
 ucParams.numALCandidates = numALCandidates;
 ucParams.lowestLogliklVal = lowestLogliklVal;
 ucParams.alBandwidth = alBandwidth;
@@ -11,22 +11,19 @@ ucParams.gpNoiseLevel = noiseLevelGP;
 
 for ucResIter = 1:numResultsToBeStored
 
-  currNumUCPts = ucResIter * STORE_RESULTS_EVERY;
+  currNumUCPts = STORE_RESULTS_AT(ucResIter);
   % Obtain regressors and regressands
   Xtr = ucPts(1:currNumUCPts, :);
   Ytr = ucLogProbs(1:currNumUCPts);
 
   % Obtain the errors and estimtes
-  [currKL, ucLogJointEst, ucProbEst]= evalRegMethodKLProgress( ...
-    Xtr, Ytr, ...
-    gpFitParams, klEvalPts, truePAtEvalPts, evalMCMCParams, optKDEBandWidth);
-  prs = probRatioStatistic(prsPts, prsLogProbs, ucLogJointEst, MLEPoint, ...
-        MLELogP);
+  [currErr, ucLogJointEst]= evalRegMethodProgress(Xtr, Ytr, ...
+    gtPts, gtLogProbs, gpFitParams);
 
   % record and report
-  uc_errs(experimentIter, ucResIter) = currKL;
-  fprintf(' UC Iter: %d, #pts: %d, KL: %0.4f, prs: %0.4f\n', ucResIter, ...
-          currNumUCPts, currKL, prs);
+  uc_errs(experimentIter, ucResIter) = currErr;
+  fprintf(' UC Iter: %d, #pts: %d, Err: %e\n', ucResIter, ...
+          currNumUCPts, currErr);
 
 end
 

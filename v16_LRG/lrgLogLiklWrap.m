@@ -13,10 +13,11 @@ function [logLiklVals] = lrgLogLiklWrap(evalAtPts, lowestLogLiklVal)
 % Q_nl        : Nonlinear Correction = 30.81
 
   % Prelims
-  [~, hostname] = system('hostname');
-  if hostname(1) == '\n', hostname = hostname(2:5);
-  else, hostname = hostname(1:4);
-  end
+%   [~, hostname] = system('hostname');
+%   if hostname(1) == '\n', hostname = hostname(2:5);
+%   else, hostname = hostname(1:4);
+%   end
+  hostname = 'gs13';
 
   numPts = size(evalAtPts, 1);
   numDims = size(evalAtPts, 2); % This should be 9 ?
@@ -37,6 +38,7 @@ function [logLiklVals] = lrgLogLiklWrap(evalAtPts, lowestLogLiklVal)
       commandStr = sprintf('%s %f ', commandStr, currEvalPt(k));
     end
     commandStr = sprintf('%s %s && cd ..', commandStr, fortOutFile);
+    commandStr,
     
     % Execute the command
     system(commandStr);
@@ -44,6 +46,7 @@ function [logLiklVals] = lrgLogLiklWrap(evalAtPts, lowestLogLiklVal)
     % Read from file
     outVal = load(outFile);
     if isnan(outVal), outVal = -inf; end
+    outVal = outVal;
     logLiklVals(iter) = max(outVal, lowestLogLiklVal);
 
   end
