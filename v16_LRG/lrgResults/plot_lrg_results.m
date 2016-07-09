@@ -94,7 +94,7 @@ loglog(STORE_RESULTS_AT, mean_mcmc_reg_err, 'r-x'); hold on,
 loglog(STORE_RESULTS_AT, mean_rand_err, 'g-s'); hold on
 loglog(STORE_RESULTS_AT, mean_uc_err, 'b-o'); hold on
 % legend('MCMC-DE', 'MCMC-R', 'RAND', 'VR');
-legend('MCMC-R', 'RAND', 'EV');
+% legend('MCMC-R', 'RAND', 'EV');
 
 % errorbar(STORE_MCMC_RESULTS_AT, mean_mcmc_err, std_mcmc_err, 'Color', 'm');
 errorbar(STORE_RESULTS_AT, mean_mcmc_reg_err, std_mcmc_reg_err, 'Color', 'r');

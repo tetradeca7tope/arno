@@ -23,8 +23,7 @@ plot(xPts, f(xPts), 'x', 'LineWidth', LW, 'MarkerSize', MS, 'color', c1);
 plot(qPts, f(qPts), 'o', 'LineWidth', LW, 'MarkerSize', MS, 'color', c2);
 xlim([x1 x2]);
 set(gca, 'XTick', [], 'YTick', []);
-set(gca,'position',[0 0 1 1],'units','normalized')
-axis off;
+set(gca,'position',[0.005 0.005 0.99 0.99],'units','normalized');
 
 figure;
 plot(x, exp(f(x)), 'LineWidth', LW ); hold on
@@ -36,5 +35,4 @@ set(gca, 'XTick', [], 'YTick', []);
 % set(gca,'DefaultTextFontSize',14)
 xlim([x1 x2]);
 ylim([-10 350]);
-set(gca,'position',[0 0 1 1],'units','normalized')
-axis off;
+set(gca,'position',[0.005 0.005 0.99 0.99],'units','normalized');

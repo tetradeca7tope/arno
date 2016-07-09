@@ -65,7 +65,7 @@ end
 axis([0 100 -4 2.5]);
 xlabel('Number of Queries');
 ylabel('log(KL(true-post || est-post))');
-legend('EDR', 'VR', 'MCMC-R', 'RAND');
+% legend('EDR', 'VR', 'MCMC-R', 'RAND');
 
 % Plot in log log scale
 alMean = mean(alm);
@@ -89,7 +89,7 @@ loglog(1:100, mrMean, 'r-x');
 loglog(1:100, bfMean, 'g-d');
 loglog(1:100, ucMean, 'b-o');
 loglog(1:100, alMean, 'c-d');
-legend('MCMC-DE', 'ABC', 'MCMC-R', 'RAND', 'EV', 'NED');
+% legend('MCMC-DE', 'ABC', 'MCMC-R', 'RAND', 'EV', 'NED');
 
 errorbar(1:1000, mdMean, mdStd, 'Color', 'm');
 errorbar(1:1000, abMean, abStd, 'Color', 'y');

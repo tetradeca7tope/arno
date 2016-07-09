@@ -59,25 +59,25 @@ std_abc_err = std(abc_errs)/stdErrNormalizer;
 % Now plot them out
 pink = [1 0.78 0.8];
 loglog(PTS_PER_RES * (1:NUM_MCMC_RES), mean_mcmc_err, 'm-s'); hold on,
-loglog(150 * (1:43), mean_emcee_err, '-s', 'Color', pink);
+loglog(150 * (1:43), mean_emcee_err, '-s', 'Color', 'k');
 loglog(PTS_PER_RES * (1:NUM_MCMC_RES), mean_abc_err, 'y->');
 loglog(PTS_PER_RES * (1:NUM_RES), mean_mcmcReg_err, 'r-x');
 loglog(PTS_PER_RES * (1:NUM_RES), mean_rand_err, 'g-d');
 loglog(PTS_PER_RES * (1:NUM_RES), mean_edr_err, 'c-d');
 % loglog(PTS_PER_RES * (1:NUM_RES), mean_uc_err, 'b-o');
-loglog(PTS_PER_RES * (1:NUM_RES), mean_uc2_err, 'k-o');
+loglog(PTS_PER_RES * (1:NUM_RES), mean_uc2_err, 'b-o');
 % legend('MCMC-DE', 'Emcee', 'ABC', 'MCMC-R', 'RAND', 'EDR(h=0.1)', 'VR(h=0.1)', 'VR(h=0.2)');
-legend('MCMC-DE', 'Emcee', 'ABC', 'MCMC-R', 'RAND', 'NED', 'EV');
+% legend('MCMC-DE', 'Emcee', 'ABC', 'MCMC-R', 'RAND', 'NED', 'EV');
 
 % Plot errorbars
 errorbar(PTS_PER_RES*(1:NUM_MCMC_RES),mean_mcmc_err,std_mcmc_err,'Color','m');
-errorbar(150*(1:43),mean_emcee_err,std_emcee_err,'Color',pink);
+errorbar(150*(1:43),mean_emcee_err,std_emcee_err,'Color','k');
 errorbar(PTS_PER_RES*(1:NUM_MCMC_RES),mean_abc_err,std_abc_err,'Color','y');
 errorbar(PTS_PER_RES*(1:NUM_RES),mean_mcmcReg_err,std_mcmcReg_err,'Color','r');
 errorbar(PTS_PER_RES*(1:NUM_RES),mean_rand_err,std_rand_err,'Color','g');
 errorbar(PTS_PER_RES*(1:NUM_RES),mean_edr_err,std_edr_err,'Color','c');
 % errorbar(PTS_PER_RES*(1:NUM_RES),mean_uc_err,std_uc_err,'Color','b');
-errorbar(PTS_PER_RES*(1:NUM_RES),mean_uc2_err,std_uc2_err,'Color','k');
+errorbar(PTS_PER_RES*(1:NUM_RES),mean_uc2_err,std_uc2_err,'Color','b');
 
 % add verticalbars for MCMC-de, abc and emcee
 plot(PTS_PER_RES*[19 19], [mean_mcmc_err(19) 1000], 'm');
